@@ -1,0 +1,34 @@
+🦴 ESTRUCTURA GENERAL DE CARPETAS:
+
+my-project/
+│
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   └── app.js
+│   ├── package.json
+│   ├── .env  # Variables de entorno específicas del backend
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.js  (o react-scripts)
+│   └── .env  # Variables de entorno específicas del frontend
+│
+└── README.md
+
+🚀 EJECUTAR EL PROYECTO:
+- Opción 1: Dos terminales
+    a. frontend
+        cd frontend
+        npm run dev
+    b. backend
+        cd backend
+        npm run dev
+- Opción 2: Concurrently (npm install --save-dev concurrently) --> Raíz del proyecto = npm run dev
+
+*Importar import { v4 as uuidv4 } from 'uuid';

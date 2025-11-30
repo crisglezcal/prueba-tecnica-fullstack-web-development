@@ -1,0 +1,31 @@
+🌳ÁRBOL DE COMPONENTES:
+
+App
+├── Header
+├── Main
+│   ├── Home
+│   ├── Login
+│   ├── AvesGredos
+│   │   └── DetalleAveGredos
+│   ├── AvesNavarrevisca
+│   │   └── DetalleAveNavarrevisca
+│   ├── Favoritos
+│   └── Administrador
+└── Footer
+
+🗂️ COMANDOS CARPETAS Y FICHEROS:
+
+Comandos componentes principales:
+    npx crcf frontend/src/components/Header -j --notest -f
+    npx crcf frontend/src/components/Footer -j --notest -f
+    npx crcf frontend/src/components/Main -j --notest -f
+
+Comandos componentes de vistas (dentro de Main):
+    npx crcf frontend/src/components/Main/Home -j --notest -f
+    npx crcf frontend/src/components/Main/Login -j --notest -f
+    npx crcf frontend/src/components/Main/AvesGredos -j --notest -f
+    npx crcf frontend/src/components/Main/AvesGredos/DetalleAveGredos -j --notest -f
+    npx crcf frontend/src/components/Main/AvesNavarrevisca -j --notest -f
+    npx crcf frontend/src/components/Main/AvesNavarrevisca/DetalleAveNavarrevisca -j --notest -f
+    npx crcf frontend/src/components/Main/Favoritos -j --notest -f
+    npx crcf frontend/src/components/Main/Administrador -j --notest -f
