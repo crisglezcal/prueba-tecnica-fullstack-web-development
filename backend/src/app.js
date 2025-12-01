@@ -1,25 +1,33 @@
-// Prueba GET
-
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-
-dotenv.config();
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(cors()); // Permite peticiones desde el frontend
+app.use(cors());
 app.use(express.json());
 
-// Ruta de prueba
-app.get('/api/test', (req, res) => {
-  res.json({ message: '¡Backend funcionando!' });
+// Importar rutas
+const gredosRoutes = require('./routes/gredos.routes.js');
+
+// Usar rutas
+app.use('/api/avila', gredosRoutes);
+
+// Ruta principal (prueba)
+app.get('/', (req, res) => {
+  res.json({
+    message: 'API Aves de Gredos - Ávila',
+    version: '1.0.0',
+    endpoints: {
+      observaciones: 'GET /api/avila/observations',
+      especies: 'GET /api/avila/species',
+      buscarEspecie: 'GET /api/avila/species/search?q=nombre',
+      detalleEspecie: 'GET /api/avila/species/:codigo',
+      puntosCalientes: 'GET /api/avila/hotspots'
+    }
+  });
 });
 
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-  console.log(`Servidor backend escuchando en http://localhost:${PORT}`);
+  console.log(`✅ Servidor funcionando en http://localhost:${PORT}`);
 });
-
-// GET /api/test devolverá un JSON simple { message: "¡Backend funcionando!" }.
-// cors() permite que tu frontend en otro puerto pueda hacer la petición.
