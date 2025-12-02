@@ -1,3 +1,10 @@
+/*
+🛣️ ROUTES (Rutas) → gredos.routes.js
+    * Define las URL (endpoints) de tu API
+    * Conecta URLs con funciones del controller
+    * Configura verbos HTTP (GET, POST, PUT, DELETE)
+*/
+
 const express = require('express');
 const router = express.Router();
 const gredosController = require('../controllers/gredos.controller.js');
