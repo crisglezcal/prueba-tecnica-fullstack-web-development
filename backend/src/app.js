@@ -25,7 +25,11 @@ app.use(express.json()); // Middleware para parsear JSON → Convierte el cuerpo
 // =============================================================================================================================
 
 const homeRoutes = require('./routes/home.routes.js');    
-const gredosRoutes = require('./routes/gredos.routes.js'); 
+const gredosRoutes = require('./routes/gredos.routes.js');
+const navarreviscaRoutes = require('./routes/navarrevisca.routes.js');
+const navarreviscaDetailRoutes = require('./routes/navarreviscaDetail.routes.js');
+const favoritesRoutes = require('./routes/favorites.routes.js'); 
+const adminRoutes = require('./routes/admin.routes.js');
 
 // =============================================================================================================================
 // CONFIGURAR LAS RUTAS DE LA APLICACIÓN
@@ -33,6 +37,10 @@ const gredosRoutes = require('./routes/gredos.routes.js');
 
 app.use('/', homeRoutes); // http://localhost:3001/
 app.use('/api/avila', gredosRoutes); // http://localhost:3001/api/avila/observations
+app.use('/aves/navarrevisca', navarreviscaRoutes); // http://localhost:3001/aves/navarrevisca
+app.use('/aves/navarrevisca/detalle', navarreviscaDetailRoutes); // http://localhost:3001/aves/navarrevisca/detalle/:id
+app.use('/favoritos', favoritesRoutes); // http://localhost:3001/favoritos
+app.use('/admin', adminRoutes); // http://localhost:3001/admin
 
 // =============================================================================================================================
 // INICIAR EL SERVIDOR
@@ -41,6 +49,6 @@ app.use('/api/avila', gredosRoutes); // http://localhost:3001/api/avila/observat
 const PORT = process.env.PORT || 3001; // Obtiene el puerto desde variables de entorno o usar 3001 por defecto
 
 app.listen(PORT, () => {
-  console.log(`✅ Servidor funcionando en http://localhost:${PORT}`);
+  console.log(`Servidor funcionando en http://localhost:${PORT}`);
 });
 

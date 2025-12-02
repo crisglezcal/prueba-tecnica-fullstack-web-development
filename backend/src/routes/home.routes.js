@@ -1,5 +1,5 @@
 /* 
-🛣️ HOME ROUTES (Rutas) → home.routes.js
+🛣️ ROUTES (Rutas) → home.routes.js
     * Define UNA sola ruta: GET /
 */
 
