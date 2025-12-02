@@ -1,33 +1,46 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+/* 
+🚀 app.js - Archivo principal del servidor
+    * Punto de entrada de la aplicación Node.js/Express
+    * Configura el servidor y todas las rutas
+*/
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+// =============================================================================================================================
+// IMPORTAR DEPENDENCIAS
+// =============================================================================================================================
 
-// Importar rutas
-const gredosRoutes = require('./routes/gredos.routes.js');
+const express = require('express'); // express: Framework web para Node.js (núcleo del servidor)
+const cors = require('cors'); // cors: Middleware para permitir peticiones desde diferentes dominios (frontend)
+require('dotenv').config(); // dotenv: Carga variables de entorno desde el archivo .env
 
-// Usar rutas
-app.use('/api/avila', gredosRoutes);
+// =============================================================================================================================
+// CREAR LA APLICACIÓN EXPRESS Y CONFIRGURAR MIDDLEWARES
+// =============================================================================================================================
 
-// Ruta principal (prueba)
-app.get('/', (req, res) => {
-  res.json({
-    message: 'API Aves de Gredos - Ávila',
-    version: '1.0.0',
-    endpoints: {
-      observaciones: 'GET /api/avila/observations',
-      especies: 'GET /api/avila/species',
-      buscarEspecie: 'GET /api/avila/species/search?q=nombre',
-      detalleEspecie: 'GET /api/avila/species/:codigo',
-      puntosCalientes: 'GET /api/avila/hotspots'
-    }
-  });
-});
+const app = express(); // Crea una instancia de la aplicación Express → "encender" el motor del servidor
+app.use(cors()); // Middleware CORS → Permite que EL frontend (ej: localhost:5173) se comunique con el backend (localhost:3001) 
+app.use(express.json()); // Middleware para parsear JSON → Convierte el cuerpo de las peticiones POST/PUT a objetos JavaScript
 
-const PORT = process.env.PORT || 3001;
+// =============================================================================================================================
+// IMPORTAR ARCHIVOS DE RUTAS
+// =============================================================================================================================
+
+const homeRoutes = require('./routes/home.routes.js');    
+const gredosRoutes = require('./routes/gredos.routes.js'); 
+
+// =============================================================================================================================
+// CONFIGURAR LAS RUTAS DE LA APLICACIÓN
+// =============================================================================================================================
+
+app.use('/', homeRoutes); // http://localhost:3001/
+app.use('/api/avila', gredosRoutes); // http://localhost:3001/api/avila/observations
+
+// =============================================================================================================================
+// INICIAR EL SERVIDOR
+// =============================================================================================================================
+
+const PORT = process.env.PORT || 3001; // Obtiene el puerto desde variables de entorno o usar 3001 por defecto
+
 app.listen(PORT, () => {
   console.log(`✅ Servidor funcionando en http://localhost:${PORT}`);
 });
+
