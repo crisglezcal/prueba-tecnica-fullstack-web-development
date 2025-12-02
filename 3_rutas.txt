@@ -2,8 +2,7 @@
 | ---------------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------- |
 | **Home**                           | Mostrar texto, mapa y descripción (contenido estático) | GET /home                                                               |
 | **Login**                          | Autenticación (Login, sign in y logout)                | POST /login + /signup + /logout(GET?) + /auth/google                                              |
-| **Aves de España (Gredos)**        | Mostrar listado aves con filtro                        | GET /aves/gredos                                                        |
-| **Detalle (1) - Ave Gredos**       | Mostrar detalle de un ave                              | GET /aves/gredos/:id                                                    |
+| **Aves de Gredos (API)**           | Mostrar listado aves con filtro                        | *Rutas API                                                       |
 | **Aves de Navarrevisca**           | Listado aves con filtro, añadir a favoritos y crear    | GET /aves/navarrevisca + POST /aves/navarrevisca + POST /favoritos      |
 | **Detalle (2) - Ave Navarrevisca** | Mostrar detalle de un ave                              | GET /aves/navarrevisca/:id                                              |
 | **Favoritos**                      | Mostrar y borrar aves favoritos                        | GET /favoritos + DELETE /favoritos/:id                                  |
@@ -17,19 +16,26 @@
     POST /logout (¿GET?)
     POST /auth/google
 3. AVES DE GREDOS:
-    GET /aves/gredos
-4. DETALLE (1) - AVES DE GREDOS:
-    GET /aves/gredos/:id
-5. AVES DE NAVARREVISCA:
+    a. Observaciones en Ávila
+        GET /api/avila/observations
+    b. Especies de Ávila 
+        GET /api/avila/species
+    c. Buscar especie
+        GET /api/avila/species/search?q=águila
+    d. Información detallada de especie
+        GET /api/avila/species/:code
+    e. Puntos calientes de observación
+        GET /api/avila/hotspots
+4. AVES DE NAVARREVISCA:
     GET /aves/navarrevisca
     POST /aves/navarrevisca
     POST /favoritos
-6. DETALLE (2) - AVES DE NAVARREVISCA:
+5. DETALLE (2) - AVES DE NAVARREVISCA:
     GET /aves/navarrevisca/:id
-7. FAVORITOS:
+6. FAVORITOS:
     GET /favoritos
     DELETE /favoritos/:id
-8. ADMINISTRADOR:
+7. ADMINISTRADOR:
     POST /aves 
     PUT /aves/:id
     DELETE /aves/:id
