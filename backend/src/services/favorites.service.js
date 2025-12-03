@@ -1,7 +1,8 @@
 /* 
-📩 SERVICE → favorites.service.js
+📩 FAVORITES SERVICE → favorites.service.js
     * Servicio para manejar favoritos
-    * NOTA: La autenticación se maneja en el controller
+    * Interactúa con la base de datos PostgreSQL
+    * Proporciona métodos para CRUD de favoritos
 */
 
 const pool = require('../config/database.js');
@@ -14,7 +15,7 @@ class FavoritesService {
       console.log(`Service: Obteniendo favoritos del usuario ${userId}...`);
       
       const query = `
-        SELECT * FROM user_favorites 
+        SELECT * FROM "Favorites_birds" 
         WHERE id_user = $1
       `;
       
@@ -33,7 +34,7 @@ class FavoritesService {
       console.log(`Service: Verificando si ave ${birdId} es favorito de usuario ${userId}...`);
       
       const query = `
-        SELECT id_favbird FROM user_favorites 
+        SELECT id_favbird FROM "Favorites_birds" 
         WHERE id_user = $1 AND id_bird = $2
         LIMIT 1
       `;
@@ -53,7 +54,7 @@ class FavoritesService {
       console.log(`Service: Añadiendo ave ${birdId} a favoritos del usuario ${userId}...`);
       
       const query = `
-        INSERT INTO user_favorites (id_user, id_bird)
+        INSERT INTO "Favorites_birds" (id_user, id_bird)
         VALUES ($1, $2)
         RETURNING id_favbird, id_user, id_bird
       `;
@@ -71,7 +72,7 @@ class FavoritesService {
     }
   }
   
-  // 4. Obtener favoritos CON DETALLES DEL AVE
+  // 4. Obtener favoritos con detalles
   async getUserFavoritesWithDetails(userId) {
     try {
       console.log(`Service: Obteniendo favoritos con detalles para usuario ${userId}...`);
@@ -86,8 +87,8 @@ class FavoritesService {
           b.family,
           b.image,
           b.threat_level
-        FROM user_favorites f
-        JOIN navarrevisca_birds b ON f.id_bird = b.id_bird
+        FROM "Favorites_birds" f
+        JOIN "Navarrevisca_birds" b ON f.id_bird = b.id_bird
         WHERE f.id_user = $1
       `;
       
@@ -106,7 +107,7 @@ class FavoritesService {
       console.log(`Service: Eliminando favorito ${favoriteId} del usuario ${userId}...`);
       
       const query = `
-        DELETE FROM user_favorites 
+        DELETE FROM "Favorites_birds" 
         WHERE id_favbird = $1 AND id_user = $2
         RETURNING id_favbird
       `;

@@ -1,7 +1,11 @@
 /* 
-🎮 CONTROLLER (Controlador) → home.controller.js
+🎮 HOME CONTROLLER (Controlador) → home.controller.js
     * Controlador simple para GET /
 */
+
+// ========================================================================================================================================  
+// 1. PÁGINA DE INICIO
+// ========================================================================================================================================  
 
 // GET / - Página de inicio
 function getHome(req, res) {

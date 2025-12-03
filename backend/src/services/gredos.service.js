@@ -1,5 +1,5 @@
 /*
-📩 SERVICE (Servicio) → gredos.service.js
+📩 GREDOS SERVICE (Servicio) → gredos.service.js
     * Mensajero externo (se comunica con APIs o bases de datos externas)
     * Hace llamadas HTTP a la API de eBird y maneja autenticación (tokens API)
     * Maneja errores de conexión externa
@@ -12,9 +12,7 @@ const axios = require('axios'); // Importa axios para hacer peticiones HTTP
 const EBIRD_API_KEY = process.env.EBIRD_API_KEY; // Obtiene la clave API de eBird desde las variables de entorno
 const BASE_URL = 'https://api.ebird.org/v2'; // URL base de la API de eBird
 
-// =============================================================================================================================
 // 1. OBTENER OBSERVACIONES DE ÁVILA
-// =============================================================================================================================
 async function getObservations(options = {}) {
   try {
 
@@ -58,9 +56,7 @@ async function getObservations(options = {}) {
   }
 }
 
-// =============================================================================================================================
 // 2. OBTENER LISTA DE ESPECIES DE ÁVILA
-// =============================================================================================================================
 async function getSpeciesList() {
   try {
     const regionCode = 'ES-CL-AV';
@@ -82,9 +78,7 @@ async function getSpeciesList() {
   }
 }
 
-// =============================================================================================================================
 // 3. BUSCAR ESPECIE
-// =============================================================================================================================
 async function searchSpecies(query) {
   try {
     // Endpoint de taxonomía (clasificación de especies)
@@ -116,9 +110,7 @@ async function searchSpecies(query) {
   }
 }
 
-// =============================================================================================================================
 // 4. OBTENER DETALLES DE ESPECIE
-// =============================================================================================================================
 async function getSpeciesDetail(speciesCode) {
   try {
 
@@ -171,9 +163,7 @@ async function getSpeciesDetail(speciesCode) {
   }
 }
 
-// =============================================================================================================================
 // 5. OBTENER PUNTOS CALIENTES
-// =============================================================================================================================
 async function getHotspots(options = {}) {
   try {
     
@@ -220,11 +210,10 @@ async function getHotspots(options = {}) {
 }
 
 // Exportar funciones
-  // Esto permite que el controller pueda importarlas y usarlas
 module.exports = {
-  getObservations,   // Para obtener observaciones
-  getSpeciesList,    // Para lista de especies
-  searchSpecies,     // Para buscar especies
-  getSpeciesDetail,  // Para detalles de especie
-  getHotspots        // Para puntos calientes
+  getObservations,   
+  getSpeciesList,    
+  searchSpecies,     
+  getSpeciesDetail,  
+  getHotspots        
 };

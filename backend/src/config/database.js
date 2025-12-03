@@ -1,19 +1,28 @@
+/* 
+📦 database.js - Configuración de la conexión a PostgreSQL
+    * Usa la librería pg (node-postgres)
+    * Configura la conexión usando variables de entorno
+    * Exporta el pool de conexiones para usar en otros módulos
+*/
+
 const { Pool } = require('pg');
 require('dotenv').config();
 
-// 1. Crear la conexión
+console.log('Conectando a:', process.env.PG_HOST);
+
 const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',     // Dirección de PostgreSQL
-  port: process.env.DB_PORT || 5432,            // Puerto (5432 es el de PostgreSQL)
-  database: process.env.DB_NAME,                // Nombre base de datos
-  user: process.env.DB_USER,                    // Usuario de PostgreSQL
-  password: process.env.DB_PASSWORD             // Contraseña de PostgreSQL
+  host: process.env.PG_HOST,
+  port: process.env.PG_PORT,
+  database: process.env.PG_DATABASE,
+  user: process.env.PG_USER,
+  password: process.env.PG_PASSWORD,
+  ssl: { rejectUnauthorized: false }, // Requerido para Render
+  connectionTimeoutMillis: 5000,
 });
 
-// 2. Probar que funciona
+// Test al iniciar
 pool.on('connect', () => {
-  console.log('✅ Conectado a PostgreSQL');
+  console.log('PostgreSQL CONECTADO');
 });
 
-// 3. Exportar para usarlo en services
 module.exports = pool;

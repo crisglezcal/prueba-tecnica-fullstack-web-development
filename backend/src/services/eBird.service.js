@@ -1,6 +1,15 @@
+/* 
+📩 EBIRD SERVICE → eBird.service.js
+    * Servicio para interactuar con la API de eBird
+    * Utiliza un cliente HTTP configurado con axios
+    * Maneja errores de conexión y respuestas de la API
+*/
+
+// Importa axios para hacer peticiones HTTP
 const axios = require('axios');
 require('dotenv').config();
 
+// Configuración de la API eBird
 const EBIRD_API_KEY = process.env.EBIRD_API_KEY;
 const EBIRD_BASE_URL = 'https://api.ebird.org/v2';
 
