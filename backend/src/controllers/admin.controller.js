@@ -1,60 +1,65 @@
 /* 
-🎮 CONTROLLER → admin.controller.js
+🎮 ADMIN CONTROLLER → admin.controller.js
     * Controlador para operaciones de administrador
-    * CRUD completo de aves (crear, editar y eliminar)
+    * AUTH: Verifica token y rol de administrador
 */
 
 const adminService = require('../services/admin.service.js');
 const adminModel = require('../models/admin.model.js');
 
-// =================================================================================================
-// 1. CREAR AVE (POST /admin/aves)
-// =================================================================================================
+// ========================================================================================================================================
+// 1. CREAR AVE
+// ========================================================================================================================================
 
 async function createBird(req, res) {
   try {
     console.log('Admin controller: Creando nueva ave');
     
-    // TEMPORAL: Sin autenticación para desarrollo
-    // const adminId = req.user?.id;
-    // if (!adminId) {
-    //   return res.status(401).json({
-    //     success: false,
-    //     error: 'Autenticación requerida'
-    //   });
-    // }
-    // Verificar rol de admin cuando haya auth
-    // if (req.user.role !== 'admin') {
-    //   return res.status(403).json({
-    //     success: false,
-    //     error: 'Acceso denegado',
-    //     message: 'Se requiere rol de administrador'
-    //   });
-    // }
+    // Verifica token
+    if (!req.token || !req.token.id) {
+      return res.status(401).json({
+        success: false,
+        error: 'Autenticación requerida'
+      });
+    }
     
-    // Formatear datos para creación
-    const birdData = adminModel.formatBirdForCreate(req.body/* , adminId */);
+    // Verifica si el usuario tiene rol de administrador
+    if (req.token.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Acceso denegado',
+        message: 'Se requiere rol de administrador',
+        user_role: req.token.role
+      });
+    }
     
-    // Crear en base de datos
+    // Extrae información del administrador del token
+    const adminId = req.token.id;
+    const adminEmail = req.token.email;
+    
+    // Transforma los datos del request al formato que necesita la base de datos
+    const birdData = adminModel.formatBirdForCreate(req.body, adminId);
+    
+    // Crea en base de datos a través del servicio
     const newBird = await adminService.createBird(birdData);
     
-    // Formatear respuesta
+    // Formatea respuesta para el cliente
     const formattedResponse = adminModel.formatBirdResponse(newBird, 'created');
     
+    // Envia respuesta exitosa
     res.status(201).json({
       success: true,
       ...formattedResponse,
-      metadata: {
-        action: 'bird_created',
-        timestamp: new Date().toISOString(),
-        auth_status: 'temp_admin' // Temporal para desarrollo
+      admin: {
+        id: adminId,
+        email: adminEmail
       }
     });
     
   } catch (error) {
     console.error('Admin Controller error en createBird:', error);
     
-    // Manejo de errores específicos
+        // Error 409: Conflicto - Ave duplicada
     if (error.message.includes('Ya existe')) {
       return res.status(409).json({
         success: false,
@@ -63,6 +68,7 @@ async function createBird(req, res) {
       });
     }
     
+    // Error 500: Error interno del servidor
     res.status(500).json({
       success: false,
       error: 'Error al crear ave',
@@ -71,46 +77,59 @@ async function createBird(req, res) {
   }
 }
 
-// =================================================================================================
-// 2. ACTUALIZAR AVE (PUT /admin/aves/:id)
-// =================================================================================================
+// ========================================================================================================================================  
+// 2. ACTUALIZAR AVE
+// ========================================================================================================================================
 
 async function updateBird(req, res) {
   try {
+    // Obtener ID del ave desde los parámetros de la URL
     const birdId = parseInt(req.params.id);
     console.log(`Admin Controller: Actualizando ave ID ${birdId}`);
     
-    // TEMPORAL: Sin autenticación para desarrollo
-    // const adminId = req.user?.id;
-    // if (!adminId || req.user.role !== 'admin') {
-    //   return res.status(403).json({
-    //     success: false,
-    //     error: 'Se requiere rol de administrador'
-    //   });
-    // }
+    // Verificar token y rol de admin (misma lógica que create)
+    if (!req.token || !req.token.id) {
+      return res.status(401).json({
+        success: false,
+        error: 'Autenticación requerida'
+      });
+    }
     
-    // Formatear datos para actualización
-    const updateData = adminModel.formatBirdForUpdate(req.body/* , adminId */);
+    if (req.token.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Acceso denegado',
+        message: 'Se requiere rol de administrador',
+        user_role: req.token.role
+      });
+    }
     
-    // Actualizar en base de datos
+    const adminId = req.token.id;
+    const adminEmail = req.token.email;
+    
+    // Formatea datos para actualización
+    const updateData = adminModel.formatBirdForUpdate(req.body, adminId);
+    
+    // Actualiza en base de datos
     const updatedBird = await adminService.updateBird(birdId, updateData);
     
-    // Formatear respuesta
+    // Formatea respuesta
     const formattedResponse = adminModel.formatBirdResponse(updatedBird, 'updated');
     
+    // Envia respuesta exitosa
     res.json({
       success: true,
       ...formattedResponse,
-      metadata: {
-        action: 'bird_updated',
-        timestamp: new Date().toISOString(),
-        auth_status: 'temp_admin'
+      admin: {
+        id: adminId,
+        email: adminEmail
       }
     });
     
   } catch (error) {
     console.error(`Admin Controller error en updateBird:`, error);
     
+    // Error 404: Ave no encontrada
     if (error.message.includes('no encontrada')) {
       return res.status(404).json({
         success: false,
@@ -119,6 +138,7 @@ async function updateBird(req, res) {
       });
     }
     
+    // Error 500: Error interno del servidor
     res.status(500).json({
       success: false,
       error: 'Error al actualizar ave',
@@ -127,44 +147,60 @@ async function updateBird(req, res) {
   }
 }
 
-// =================================================================================================
-// 3. ELIMINAR AVE (DELETE /admin/aves/:id)
-// =================================================================================================
+// ========================================================================================================================================  
+// 3. ELIMINAR AVE
+// ========================================================================================================================================
 
 async function deleteBird(req, res) {
   try {
+    // Obtener ID del ave desde los parámetros de la URL
     const birdId = parseInt(req.params.id);
     console.log(`Admin Controller: Eliminando ave ID ${birdId}`);
     
-    // TEMPORAL: Sin autenticación para desarrollo
-    // const adminId = req.user?.id;
-    // if (!adminId || req.user.role !== 'admin') {
-    //   return res.status(403).json({
-    //     success: false,
-    //     error: 'Se requiere rol de administrador'
-    //   });
-    // }
+    // Verificar token y rol de admin
+    if (!req.token || !req.token.id) {
+      return res.status(401).json({
+        success: false,
+        error: 'Autenticación requerida'
+      });
+    }
+    
+    if (req.token.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Acceso denegado',
+        message: 'Se requiere rol de administrador',
+        user_role: req.token.role
+      });
+    }
+    
+    const adminId = req.token.id;
+    const adminEmail = req.token.email;
     
     // Eliminar de la base de datos
+    // El servicio también elimina registros relacionados en favoritos
     const result = await adminService.deleteBird(birdId);
     
-    // Formatear respuesta
+    // Formatea respuesta
     const formattedResponse = adminModel.formatBirdResponse({ id_bird: birdId }, 'deleted');
     
+    // Envia respuesta exitosa con metadata
     res.json({
       success: true,
       ...formattedResponse,
+      admin: {
+        id: adminId,
+        email: adminEmail
+      },
       metadata: {
-        action: 'bird_deleted',
-        timestamp: new Date().toISOString(),
-        auth_status: 'temp_admin',
-        favorites_deleted: result.favoritesDeleted || 0
+        favorites_deleted: result.favoritesDeleted || 0  // Número de favoritos eliminados
       }
     });
     
   } catch (error) {
     console.error(`Admin Controller error en deleteBird:`, error);
     
+    // Error 404: Ave no encontrada
     if (error.message.includes('no encontrada')) {
       return res.status(404).json({
         success: false,
@@ -173,6 +209,7 @@ async function deleteBird(req, res) {
       });
     }
     
+    // Error 500: Error interno del servidor
     res.status(500).json({
       success: false,
       error: 'Error al eliminar ave',
@@ -181,7 +218,7 @@ async function deleteBird(req, res) {
   }
 }
 
-// Exportar funciones
+// Exportar funciones del controlador
 module.exports = {
   createBird,
   updateBird,

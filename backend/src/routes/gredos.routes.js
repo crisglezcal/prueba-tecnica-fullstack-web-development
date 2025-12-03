@@ -1,5 +1,5 @@
 /*
-🛣️ ROUTES (Rutas) → gredos.routes.js
+🛣️ GREDOS ROUTES (Rutas) → gredos.routes.js
     * Define las URL (endpoints) de tu API
     * Conecta URLs con funciones del controller
     * Configura verbos HTTP (GET, POST, PUT, DELETE)
@@ -9,6 +9,9 @@ const express = require('express');
 const router = express.Router();
 const gredosController = require('../controllers/gredos.controller.js');
 
+// =============================================================================================================================
+// 1. RUTAS PÚBLICAS (no requieren autenticación)
+// =============================================================================================================================
 
 // 1. OBSERVACIONES EN ÁVILA
     // http://localhost:3001/api/avila/observations

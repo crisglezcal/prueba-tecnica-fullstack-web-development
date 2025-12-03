@@ -1,38 +1,53 @@
 /* 
-🎮 CONTROLLER → navarreviscaDetail.controller.js
+🎮 NAVARREVISCA-DETAIL CONTROLLER → navarreviscaDetail.controller.js
     * Controlador para vista detalle y favoritos
-    * Variables en inglés, comentarios en castellano
+    * Auth: userId obtenido del token JWT
 */
 
 const navarreviscaService = require('../services/navarrevisca.service.js');
 const favoritesService = require('../services/favorites.service.js');
 const navarreviscaDetailModel = require('../models/navarreviscaDetail.model.js');
 
-// =================================================================================================
-// 1. GET DETALLE DE AVE (GET /aves/navarrevisca/detalle/:id)
-// =================================================================================================
+// ========================================================================================================================================  
+// 1. GET DETALLE DE AVE 
+// ========================================================================================================================================  
 
 async function getAveDetail(req, res) {
   try {
+    // Obtiene ID del ave desde los parámetros de la URL
     const birdId = parseInt(req.params.id);
     
+    // Obtiene información completa del ave desde el servicio
     const bird = await navarreviscaService.getBirdById(birdId);
     
+    // Obtiene userId del token si está autenticado
     let userFavorites = [];
-    const userId = req.user?.id;
-    if (userId) {
-      userFavorites = await favoritesService.getUserFavorites(userId);
+    let userInfo = null;
+    
+    if (req.token && req.token.id) {
+      userInfo = {
+        id: req.token.id,
+        email: req.token.email,
+        role: req.token.role
+      };
+      // Obtiene lista de favoritos del usuario para marcar si esta ave es favorita
+      userFavorites = await favoritesService.getUserFavorites(req.token.id);
     }
     
+    // Formatea detalle completo del ave
+      // Incluye información sobre si es favorita del usuario autenticado
     const formattedBird = navarreviscaDetailModel.formatAveDetailComplete(bird, userFavorites);
     
+    // Envia respuesta exitosa
     res.json({
       success: true,
       message: `Detalles de "${bird.common_name}"`,
-      data: formattedBird
+      data: formattedBird,
+      user: userInfo 
     });
     
   } catch (error) {
+    // Error 404: Ave no encontrada
     if (error.message.includes('no encontrada')) {
       return res.status(404).json({
         success: false,
@@ -40,6 +55,7 @@ async function getAveDetail(req, res) {
       });
     }
     
+    // Error 500: Error interno del servidor
     res.status(500).json({
       success: false,
       error: 'Error al obtener detalle del ave'
@@ -47,21 +63,31 @@ async function getAveDetail(req, res) {
   }
 }
 
-// =================================================================================================
-// 2. AÑADIR A FAVORITOS (POST /aves/navarrevisca/detalle/:id/favoritos)
-// =================================================================================================
+// ========================================================================================================================================  
+// 2. AÑADIR A FAVORITOS
+// ========================================================================================================================================  
 
 async function addToFavorites(req, res) {
   try {
+    // Obtiene ID del ave desde los parámetros de la URL
     const birdId = parseInt(req.params.id);
     
-    // Temporal: usuario fijo hasta implementar auth
-    const userId = 1;
+    // Requiere token válido
+    if (!req.token || !req.token.id) {
+      return res.status(401).json({
+        success: false,
+        error: 'Autenticación requerida',
+        message: 'Debes iniciar sesión para añadir favoritos'
+      });
+    }
     
-    // Verificar que el ave existe
+    const userId = req.token.id;
+    const userEmail = req.token.email;
+    
+    // Verifica que el ave existe antes de añadir a favoritos
     await navarreviscaService.getBirdById(birdId);
     
-    // Verificar si ya es favorito
+    // Verifica si ya es favorito para evitar duplicados
     const alreadyFavorite = await favoritesService.isFavorite(userId, birdId);
     if (alreadyFavorite) {
       return res.status(409).json({
@@ -70,18 +96,23 @@ async function addToFavorites(req, res) {
       });
     }
     
-    // Añadir a favoritos
+    // Añade a favoritos
     const newFavorite = await favoritesService.addFavorite(userId, birdId);
     
+    // Envia respuesta exitosa (201 Created)
     res.status(201).json({
       success: true,
       mensaje: 'Ave añadida a favoritos correctamente',
-      id_favorito: newFavorite.id_favbird,
+      id_favorito: newFavorite.id_favbird,  // ID del nuevo registro en favoritos
       id_ave: birdId,
-      id_usuario: userId
+      usuario: {
+        id: userId,
+        email: userEmail
+      }
     });
     
   } catch (error) {
+    // Error 404: Ave no encontrada
     if (error.message.includes('no encontrada')) {
       return res.status(404).json({
         success: false,
@@ -89,6 +120,7 @@ async function addToFavorites(req, res) {
       });
     }
     
+    // Error 409: Conflicto - Ya existe en favoritos
     if (error.message.includes('Ya existe en favoritos')) {
       return res.status(409).json({
         success: false,
@@ -96,6 +128,7 @@ async function addToFavorites(req, res) {
       });
     }
     
+    // Error 500: Error interno del servidor
     res.status(500).json({
       success: false,
       error: 'Error al añadir a favoritos'
@@ -103,7 +136,7 @@ async function addToFavorites(req, res) {
   }
 }
 
-// Exportar funciones
+// Exportar funciones del controlador
 module.exports = {
   getAveDetail,
   addToFavorites
