@@ -1,20 +1,22 @@
 /* 
 📩 NAVARREVISCA SERVICE → navarrevisca.service.js
-    * Servicio ESENCIAL para la tabla navarrevisca_birds
-    * Solo lo necesario: obtener todas y crear nueva
+    * Servicio ESENCIAL para la tabla Navarrevisca_birds
+    * Hace consultas SQL a la base de datos PostgreSQL
+    * Maneja errores de conexión y de consultas
+    * No transforma datos, solo los obtiene crudos
 */
 
 const pool = require('../config/database.js');
 
 class NavarreviscaService {
   
-  // 1. OBTENER TODAS LAS AVES (para GET /aves/navarrevisca)
+  // 1. OBTENER TODAS LAS AVES
   async getAllBirds() {
     try {
       console.log('Service: Obteniendo todas las aves...');
       
       const query = `
-        SELECT * FROM navarrevisca_birds
+        SELECT * FROM "Navarrevisca_birds"
         ORDER BY common_name ASC
       `;
       
@@ -28,12 +30,12 @@ class NavarreviscaService {
     }
   }
   
-  // 2. OBTENER AVE POR ID (para navarreviscaDetail)
+  // 2. OBTENER AVE POR ID
   async getBirdById(id) {
     try {
       console.log(`Service: Obteniendo ave ID ${id}...`);
       
-      const query = 'SELECT * FROM navarrevisca_birds WHERE id_bird = $1';
+      const query = 'SELECT * FROM "Navarrevisca_birds" WHERE id_bird = $1';
       const result = await pool.query(query, [id]);
       
       if (result.rows.length === 0) {
@@ -48,13 +50,13 @@ class NavarreviscaService {
     }
   }
   
-  // 3. CREAR NUEVA AVE (para POST /aves/navarrevisca)
+  // 3. CREAR NUEVA AVE
   async createBird(birdData) {
     try {
       console.log('Service: Creando nueva ave...');
       
       const query = `
-        INSERT INTO navarrevisca_birds (
+        INSERT INTO "Navarrevisca_birds" (
           common_name,
           scientific_name,
           "order",

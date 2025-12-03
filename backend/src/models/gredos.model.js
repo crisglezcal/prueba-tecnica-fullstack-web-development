@@ -1,5 +1,5 @@
 /* 
-📑 MODEL (Modelo) → gredos.model.js
+📑 GREDOS MODEL (Modelo) → gredos.model.js
     * Es el cerebro de los datos, se preocupa por la estructura y transformación de los datos
     * Define cómo se deben estructurar los datos (modelado de datos)
     * Transforma/formatea datos crudos de la API en datos útiles para la app ("traductor de datos")

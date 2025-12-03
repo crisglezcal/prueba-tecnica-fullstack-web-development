@@ -2,11 +2,11 @@
 
 App
 ├── Header
+|   └── Nav
 ├── Main
 │   ├── Home
 │   ├── Login
 │   ├── AvesGredos
-│   │   └── DetalleAveGredos
 │   ├── AvesNavarrevisca
 │   │   └── DetalleAveNavarrevisca
 │   ├── Favoritos
@@ -21,6 +21,7 @@ Comandos componentes principales:
     npx crcf frontend/src/components/Main -j --notest -f
 
 Comandos componentes de vistas (dentro de Main):
+    npx crcf frontend/src/components/Header/Nav -j --notest -f
     npx crcf frontend/src/components/Main/Home -j --notest -f
     npx crcf frontend/src/components/Main/Login -j --notest -f
     npx crcf frontend/src/components/Main/AvesGredos -j --notest -f

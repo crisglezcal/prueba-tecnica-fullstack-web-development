@@ -1,5 +1,5 @@
 /* 
-🛣️ ROUTES → navarreviscaDetail.routes.js
+🛣️ NAVARREVISCA-DETAIL ROUTES → navarreviscaDetail.routes.js
     * Rutas para vista detalle y favoritos
 */
 
@@ -7,6 +7,9 @@ const express = require('express');
 const router = express.Router();
 const navarreviscaDetailController = require('../controllers/navarreviscaDetail.controller.js');
 const { validateIdParam } = require('../middlewares/validateBirds.middleware.js');
+const getAccessToken = require('../middlewares/getAccessToken.js');
+const decodeToken = require('../middlewares/decodeToken.js');
+const userRoutes = require('../middlewares/auth.client.middleware.js');
 
 // =============================================================================================================================
 // 1. RUTAS PÚBLICAS
@@ -24,7 +27,6 @@ router.get('/:id', validateIdParam, navarreviscaDetailController.getAveDetail);
 // POST /aves/navarrevisca/detalle/:id/favoritos → Añadir ave a favoritos
 // validateIdParam valida el ID + auth required
     // http://localhost:3001/aves/navarrevisca/detalle/1/favoritos
-router.post('/:id/favoritos', validateIdParam, navarreviscaDetailController.addToFavorites); // Temporal sin auth
-// router.post('/:id/favoritos', authenticateToken, validateIdParam, navarreviscaDetailController.addToFavorites); // Con auth
+router.post('/:id/favoritos', getAccessToken, decodeToken, userRoutes, validateIdParam, navarreviscaDetailController.addToFavorites);
 
 module.exports = router;

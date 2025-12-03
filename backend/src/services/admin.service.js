@@ -1,5 +1,5 @@
 /* 
-📩 SERVICE → admin.service.js
+📩 ADMIN SERVICE → admin.service.js
     * Servicio para operaciones de administrador
 */
 
@@ -13,7 +13,7 @@ class AdminService {
       console.log('Admin Service: Creando nueva ave...');
       
       const query = `
-        INSERT INTO navarrevisca_birds (
+        INSERT INTO "Navarrevisca_birds" (
           common_name,
           scientific_name,
           "order",
@@ -75,7 +75,7 @@ class AdminService {
       values.push(birdId);
       
       const query = `
-        UPDATE navarrevisca_birds
+        UPDATE "Navarrevisca_birds"
         SET ${fields.join(', ')}
         WHERE id_bird = $${paramIndex}
         RETURNING *
@@ -105,7 +105,7 @@ class AdminService {
       let favoritesDeleted = 0;
       try {
         const deleteFavoritesQuery = `
-          DELETE FROM user_favorites 
+          DELETE FROM "Favorites_birds" 
           WHERE id_bird = $1
           RETURNING id_favbird
         `;
@@ -118,7 +118,7 @@ class AdminService {
       
       // Luego eliminar el ave
       const query = `
-        DELETE FROM navarrevisca_birds 
+        DELETE FROM "Navarrevisca_birds" 
         WHERE id_bird = $1
         RETURNING id_bird, common_name
       `;
@@ -141,7 +141,7 @@ class AdminService {
   // 4. VERIFICAR SI EL AVE EXISTE (método auxiliar)
   async birdExists(birdId) {
     try {
-      const query = 'SELECT id_bird FROM navarrevisca_birds WHERE id_bird = $1';
+      const query = 'SELECT id_bird FROM "Navarrevisca_birds" WHERE id_bird = $1';
       const result = await pool.query(query, [birdId]);
       return result.rows.length > 0;
     } catch (error) {

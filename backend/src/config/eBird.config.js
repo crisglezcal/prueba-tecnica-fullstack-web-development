@@ -1,4 +1,9 @@
-// Configuración API eBird 2.0
+/* 
+🐦 eBird.config.js - Configuración de la API eBird 2.0
+    * Usa la API pública de eBird para obtener datos de aves
+    * Configura la clave API y parámetros por defecto
+    * Exporta la configuración para usar en otros módulos
+*/
 
 const ebirdConfig = {
   API_KEY: process.env.EBIRD_API_KEY,
