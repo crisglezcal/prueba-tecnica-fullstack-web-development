@@ -5,11 +5,27 @@ import './Administrador.css';
 
 function Administrador() {
   const [birds, setBirds] = useState([]);
+  const [filteredBirds, setFilteredBirds] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadBirds();
   }, []);
+
+  useEffect(() => {
+    // Filtrar aves cuando cambia el término de búsqueda
+    if (searchTerm.trim() === '') {
+      setFilteredBirds(birds);
+    } else {
+      const filtered = birds.filter(bird =>
+        bird.nombre_comun.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        bird.nombre_cientifico.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        bird.familia.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredBirds(filtered);
+    }
+  }, [searchTerm, birds]);
 
   const loadBirds = async () => {
     try {
@@ -33,9 +49,9 @@ function Administrador() {
       }));
 
       setBirds(mappedBirds);
+      setFilteredBirds(mappedBirds);
       
     } catch (error) {
-      console.error('Error cargando aves:', error);
       Swal.fire({
         title: 'Error',
         text: 'No se pudo cargar las aves',
@@ -43,6 +59,7 @@ function Administrador() {
         confirmButtonColor: '#053f27ff'
       });
       setBirds([]);
+      setFilteredBirds([]);
     } finally {
       setLoading(false);
     }
@@ -64,9 +81,7 @@ function Administrador() {
       try {
         const token = localStorage.getItem('authToken');
         
-        console.log(`Eliminando ave ${birdId}...`);
-        
-        const deleteResponse = await fetch(`http://localhost:3001/admin/aves/${birdId}`, {
+        await fetch(`http://localhost:3001/admin/aves/${birdId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -74,10 +89,6 @@ function Administrador() {
           }
         });
 
-        const responseText = await deleteResponse.text();
-        console.log('Respuesta DELETE:', responseText);
-        
-        // Recargar la lista
         await loadBirds();
         
         Swal.fire({
@@ -89,7 +100,6 @@ function Administrador() {
         });
         
       } catch (error) {
-        console.error('Error:', error);
         Swal.fire({
           title: 'Error',
           text: 'No se pudo completar la acción',
@@ -170,7 +180,7 @@ function Administrador() {
             image: result.value.imagen
           };
 
-          const createResponse = await fetch('http://localhost:3001/admin/aves', {
+          await fetch('http://localhost:3001/admin/aves', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -179,9 +189,6 @@ function Administrador() {
             body: JSON.stringify(birdData)
           });
 
-          const responseText = await createResponse.text();
-          console.log('Respuesta CREATE:', responseText);
-          
           await loadBirds();
           
           Swal.fire({
@@ -192,7 +199,6 @@ function Administrador() {
             timer: 2000
           });
         } catch (error) {
-          console.error('Error:', error);
           Swal.fire({
             title: 'Error',
             text: 'No se pudo crear el ave',
@@ -273,7 +279,7 @@ function Administrador() {
             image: result.value.imagen
           };
 
-          const updateResponse = await fetch(`http://localhost:3001/admin/aves/${bird.id}`, {
+          await fetch(`http://localhost:3001/admin/aves/${bird.id}`, {
             method: 'PUT',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -282,9 +288,6 @@ function Administrador() {
             body: JSON.stringify(birdData)
           });
 
-          const responseText = await updateResponse.text();
-          console.log('Respuesta UPDATE:', responseText);
-          
           await loadBirds();
           
           Swal.fire({
@@ -295,7 +298,6 @@ function Administrador() {
             timer: 2000
           });
         } catch (error) {
-          console.error('Error:', error);
           Swal.fire({
             title: 'Error',
             text: 'No se pudo actualizar el ave',
@@ -337,12 +339,40 @@ function Administrador() {
         >
           + Nueva Ave
         </button>
+        
+        <div className="search-container">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="🔍 Buscar por nombre, científico o familia..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button 
+              className="btn-clear-search"
+              onClick={() => setSearchTerm('')}
+              title="Limpiar búsqueda"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
-      {birds.length > 0 ? (
+      {filteredBirds.length > 0 ? (
         <>
+          <div className="search-results-info">
+            <p>
+              Mostrando <strong>{filteredBirds.length}</strong> de <strong>{birds.length}</strong> aves
+              {searchTerm && (
+                <span> para "<em>{searchTerm}</em>"</span>
+              )}
+            </p>
+          </div>
+
           <div className="birds-grid-admin">
-            {birds.map((bird) => (
+            {filteredBirds.map((bird) => (
               <div key={bird.id} className="bird-card-admin">
                 <div className="bird-image">
                   {bird.imagen ? (
@@ -401,33 +431,18 @@ function Administrador() {
               </div>
             ))}
           </div>
-
-          <div className="admin-info">
-            <h3>📊 Resumen de aves ({birds.length})</h3>
-            <div className="summary-cards">
-              <div className="summary-card">
-                <span className="summary-count">{birds.filter(b => b.nivel_amenaza === 'LC').length}</span>
-                <span className="summary-label">LC - Preocupación menor</span>
-              </div>
-              <div className="summary-card">
-                <span className="summary-count">{birds.filter(b => b.nivel_amenaza === 'NT').length}</span>
-                <span className="summary-label">NT - Casi amenazado</span>
-              </div>
-              <div className="summary-card">
-                <span className="summary-count">{birds.filter(b => b.nivel_amenaza === 'VU').length}</span>
-                <span className="summary-label">VU - Vulnerable</span>
-              </div>
-              <div className="summary-card">
-                <span className="summary-count">{birds.filter(b => b.nivel_amenaza === 'EN').length}</span>
-                <span className="summary-label">EN - En peligro</span>
-              </div>
-              <div className="summary-card">
-                <span className="summary-count">{birds.filter(b => b.nivel_amenaza === 'CR').length}</span>
-                <span className="summary-label">CR - En peligro crítico</span>
-              </div>
-            </div>
-          </div>
         </>
+      ) : birds.length > 0 && searchTerm ? (
+        <div className="no-results-message">
+          <h3>No se encontraron resultados</h3>
+          <p>No hay aves que coincidan con "<strong>{searchTerm}</strong>"</p>
+          <button 
+            className="btn btn-secondary"
+            onClick={() => setSearchTerm('')}
+          >
+            Mostrar todas las aves
+          </button>
+        </div>
       ) : (
         <div className="no-birds-message">
           <h3>No hay aves en la base de datos</h3>

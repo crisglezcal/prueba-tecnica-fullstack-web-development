@@ -13,10 +13,7 @@ const adminOperation = require('../utils/admin.utils.js');
 
 async function createBird(req, res) {
   try {
-    console.log('=== CREATE BIRD CONTROLLER ===');
-    console.log('req.user:', req.user);
-    
-    // Verifica que el usuario esté autenticado (usa req.user, NO req.token)
+    // Verifica que el usuario esté autenticado
     if (!req.user) {
       return res.status(401).json({
         success: false,
@@ -36,11 +33,8 @@ async function createBird(req, res) {
     }
     
     // Extrae información del administrador del usuario autenticado
-    const adminId = req.user.id_user; // ← ¡CAMBIA req.token.id por req.user.id_user!
+    const adminId = req.user.id_user;
     const adminEmail = req.user.email;
-    
-    console.log(`Creando ave por admin: ${adminEmail} (ID: ${adminId})`);
-    console.log('Datos recibidos:', req.body);
     
     // Transforma los datos del request al formato que necesita la base de datos
     const birdData = adminOperation.formatBirdForCreate(req.body, adminId);
@@ -62,8 +56,6 @@ async function createBird(req, res) {
     });
     
   } catch (error) {
-    console.error('❌ Admin Controller error en createBird:', error);
-    
     // Error 409: Conflicto - Ave duplicada
     if (error.message.includes('Ya existe')) {
       return res.status(409).json({
@@ -90,12 +82,8 @@ async function updateBird(req, res) {
   try {
     // Obtener ID del ave desde los parámetros de la URL
     const birdId = parseInt(req.params.id);
-    console.log(`=== UPDATE BIRD CONTROLLER ===`);
-    console.log(`Actualizando ave ID ${birdId}`);
-    console.log('req.user:', req.user);
-    console.log('Datos:', req.body);
     
-    // Verificar usuario autenticado (usa req.user)
+    // Verificar usuario autenticado
     if (!req.user) {
       return res.status(401).json({
         success: false,
@@ -113,10 +101,8 @@ async function updateBird(req, res) {
       });
     }
     
-    const adminId = req.user.id_user; // ← CAMBIAR AQUÍ
+    const adminId = req.user.id_user;
     const adminEmail = req.user.email;
-    
-    console.log(`Actualizando por admin: ${adminEmail} (ID: ${adminId})`);
     
     // Formatea datos para actualización
     const updateData = adminOperation.formatBirdForUpdate(req.body, adminId);
@@ -138,8 +124,6 @@ async function updateBird(req, res) {
     });
     
   } catch (error) {
-    console.error(`❌ Admin Controller error en updateBird:`, error);
-    
     // Error 404: Ave no encontrada
     if (error.message.includes('no encontrada')) {
       return res.status(404).json({
@@ -166,11 +150,8 @@ async function deleteBird(req, res) {
   try {
     // Obtener ID del ave desde los parámetros de la URL
     const birdId = parseInt(req.params.id);
-    console.log(`=== DELETE BIRD CONTROLLER ===`);
-    console.log(`Eliminando ave ID ${birdId}`);
-    console.log('req.user:', req.user);
     
-    // Verificar usuario autenticado (usa req.user)
+    // Verificar usuario autenticado
     if (!req.user) {
       return res.status(401).json({
         success: false,
@@ -188,10 +169,8 @@ async function deleteBird(req, res) {
       });
     }
     
-    const adminId = req.user.id_user; // ← CAMBIAR AQUÍ
+    const adminId = req.user.id_user;
     const adminEmail = req.user.email;
-    
-    console.log(`Eliminando por admin: ${adminEmail} (ID: ${adminId})`);
     
     // Eliminar de la base de datos
     const result = await adminModel.deleteBird(birdId);
@@ -213,8 +192,6 @@ async function deleteBird(req, res) {
     });
     
   } catch (error) {
-    console.error(`❌ Admin Controller error en deleteBird:`, error);
-    
     // Error 404: Ave no encontrada
     if (error.message.includes('no encontrada')) {
       return res.status(404).json({
