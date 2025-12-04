@@ -9,8 +9,8 @@ const express = require("express");
 const adminRoutes = express.Router();
 
 adminRoutes.use(async (req, res, next) => {
-    console.log('🔍 Verificando rol de administrador...');
-    console.log('📋 req.user:', req.user);
+    console.log('Verificando rol de administrador...');
+    console.log('req.user:', req.user);
     
     // Verificar que el usuario esté autenticado
     if (!req.user) {
@@ -23,7 +23,7 @@ adminRoutes.use(async (req, res, next) => {
     
     // Verifica si el usuario tiene rol de "admin"
     if (req.user.role === "admin") {
-        console.log("✅ ADMIN USER - Acceso autorizado");
+        console.log("ADMIN USER - Acceso autorizado");
         next();
     } else {
         // 403 Forbidden (autenticado pero sin permisos de admin)

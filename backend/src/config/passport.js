@@ -1,10 +1,14 @@
-// backend/src/config/passport.js
+/* 
+🔏 PASSPORT
+    * Configuración de Passport.js para autenticación con Google OAuth 2.0
+*/
+
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const pool = require('../config/database');
 const jwt = require('jsonwebtoken');
 
-console.log('🔧 Configurando Passport para tabla Users (id_user)...');
+console.log('Configurando Passport para tabla Users (id_user)...');
 
 // Estrategia de Google adaptada a TU esquema
 passport.use(new GoogleStrategy({
@@ -14,7 +18,7 @@ passport.use(new GoogleStrategy({
   passReqToCallback: true
 }, async (req, accessToken, refreshToken, profile, done) => {
   try {
-    console.log('🎯 Google Strategy para:', profile.emails[0].value);
+    console.log('Google Strategy para:', profile.emails[0].value);
 
     const email = profile.emails[0].value;
     const name = profile.displayName.split(' ')[0] || profile.displayName;
@@ -32,7 +36,7 @@ passport.use(new GoogleStrategy({
 
     if (!user) {
       // 2. Crear NUEVO usuario - Usando TU estructura exacta
-      console.log('🆕 Creando nuevo usuario...');
+      console.log('Creando nuevo usuario...');
       
       const insertQuery = `
         INSERT INTO "Users" 
@@ -52,11 +56,11 @@ passport.use(new GoogleStrategy({
       ]);
       
       user = insertResult.rows[0];
-      console.log('✅ Usuario creado - id_user:', user.id_user);
+      console.log('Usuario creado - id_user:', user.id_user);
       
     } else {
       // 3. Usuario EXISTENTE - Actualizar googleId si está vacío
-      console.log('✅ Usuario existente - id_user:', user.id_user);
+      console.log('Usuario existente - id_user:', user.id_user);
       
       if (!user.googleId) {
         await pool.query(
@@ -64,7 +68,7 @@ passport.use(new GoogleStrategy({
           [googleId, user.id_user]
         );
         user.googleId = googleId;
-        console.log('🔧 googleId actualizado');
+        console.log('googleId actualizado');
       }
     }
 
@@ -84,12 +88,12 @@ passport.use(new GoogleStrategy({
 
     // 5. Agregar token al objeto user
     user.token = token;
-    console.log('🔑 Token JWT generado para:', user.email);
+    console.log('Token JWT generado para:', user.email);
     
     return done(null, user);
 
   } catch (error) {
-    console.error('💥 ERROR en Google Strategy:', error.message);
+    console.error('ERROR en Google Strategy:', error.message);
     console.error('Consulta SQL que falló:', error.query);
     return done(error, null);
   }
@@ -97,7 +101,7 @@ passport.use(new GoogleStrategy({
 
 // Serializar - Usar id_user (NO id)
 passport.serializeUser((user, done) => {
-  console.log('📦 Serializando id_user:', user.id_user);
+  console.log('Serializando id_user:', user.id_user);
   done(null, user.id_user);
 });
 
@@ -111,17 +115,17 @@ passport.deserializeUser(async (id_user, done) => {
     
     const user = result.rows[0];
     if (!user) {
-      console.error('❌ Usuario no encontrado con id_user:', id_user);
+      console.error('Usuario no encontrado con id_user:', id_user);
       return done(null, false);
     }
     
-    console.log('📦 Deserializando usuario:', user.email);
+    console.log('Deserializando usuario:', user.email);
     done(null, user);
   } catch (error) {
-    console.error('❌ Error deserializando:', error);
+    console.error('Error deserializando:', error);
     done(error, null);
   }
 });
 
-console.log('✅ Passport configurado para tabla con id_user');
+console.log('Passport configurado para tabla con id_user');
 module.exports = passport;

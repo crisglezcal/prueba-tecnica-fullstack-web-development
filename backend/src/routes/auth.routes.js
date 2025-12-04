@@ -34,8 +34,8 @@ router.get('/google/callback',
   }),
   (req, res) => {
     try {
-      console.log('✅ Google auth exitosa, usuario:', req.user?.email);
-      console.log('📋 Datos de req.user:', {
+      console.log('Google auth exitosa, usuario:', req.user?.email);
+      console.log('Datos de req.user:', {
         id_user: req.user?.id_user,
         email: req.user?.email,
         name: req.user?.name
@@ -59,15 +59,15 @@ router.get('/google/callback',
         { expiresIn: '24h' }
       );
       
-      console.log('✅ Token JWT generado para id_user:', req.user.id_user);
+      console.log('Token JWT generado para id_user:', req.user.id_user);
       
       // Redirigir al frontend con el token
       const redirectUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?token=${token}`;
-      console.log('🌐 Redirigiendo a:', redirectUrl);
+      console.log('Redirigiendo a:', redirectUrl);
       res.redirect(redirectUrl);
       
     } catch (error) {
-      console.error('❌ Error en callback de Google:', error);
+      console.error('Error en callback de Google:', error);
       res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login?error=auth_error&message=${error.message}`);
     }
   }
@@ -77,7 +77,7 @@ router.get('/google/callback',
 router.get('/google/logout', (req, res) => {
   req.logout((err) => {
     if (err) {
-      console.error('❌ Error al cerrar sesión de Google:', err);
+      console.error('Error al cerrar sesión de Google:', err);
     }
     res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:5173'}/login`);
   });

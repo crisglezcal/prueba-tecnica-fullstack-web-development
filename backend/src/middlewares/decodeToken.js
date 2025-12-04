@@ -15,19 +15,19 @@ const decodeToken = express.Router();
 
 // Middleware de decodificación de token JWT
 decodeToken.use(async (req, res, next) => {
-    console.log("🔍 Token recibido:", req.token ? "PRESENTE" : "AUSENTE");
-    console.log("📦 Fuente del token:", req.tokenSource || 'desconocida');
+    console.log("Token recibido:", req.token ? "PRESENTE" : "AUSENTE");
+    console.log("Fuente del token:", req.tokenSource || 'desconocida');
     
     // IMPORTANTE: Si no hay token, simplemente continuar
     // Algunas rutas pueden ser públicas o el token se añadirá después
     if (!req.token) {
-        console.log("🟡 No hay token, continuando sin autenticación");
+        console.log("No hay token, continuando sin autenticación");
         req.user = null;
         return next();
     }
     
     if (!SECRET) {
-        console.error("❌ ERROR: JWT_SECRET no está definida en .env");
+        console.error("ERROR: JWT_SECRET no está definida en .env");
         return res.status(500).json({
             success: false,
             msg: 'Error de configuración del servidor',
@@ -39,7 +39,7 @@ decodeToken.use(async (req, res, next) => {
     jwt.verify(req.token, SECRET, (err, decoded) => {
         if (err) {
             // Error en la verificación del token
-            console.error("❌ Error verificando token:", err.message);
+            console.error("Error verificando token:", err.message);
             
             // Para rutas públicas, podemos continuar sin usuario
             // Para rutas protegidas, el siguiente middleware debe verificar req.user
@@ -52,8 +52,8 @@ decodeToken.use(async (req, res, next) => {
             });
         } else {
             // Token válido y decodificado correctamente
-            console.log("✅ Token decodificado correctamente");
-            console.log("📋 Datos decodificados:", {
+            console.log("Token decodificado correctamente");
+            console.log("Datos decodificados:", {
                 id_user: decoded.id_user,  // ← ¡IMPORTANTE! id_user, NO id
                 email: decoded.email,
                 role: decoded.role,
@@ -74,7 +74,7 @@ decodeToken.use(async (req, res, next) => {
             // También mantener el token decodificado por compatibilidad
             req.decodedToken = decoded;
             
-            console.log("👤 Usuario establecido en req.user:", req.user.email);
+            console.log("Usuario establecido en req.user:", req.user.email);
             next();
         }
     });

@@ -1,0 +1,4 @@
+// getUserFavorites
+// isFavorite
+// addFavorite
+// removeFavorite   

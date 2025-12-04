@@ -1,3 +1,11 @@
+/* 
+🔏 AUTENTICACIÓN GOOGLE O AUTH - Configuración de Google OAuth 2.0
+    * Usa Passport.js para la autenticación con Google
+    * Configura la estrategia OAuth 2.0 con credenciales de Google
+    * Maneja el flujo de autenticación y creación de usuarios
+    * Exporta la configuración para usar en otros módulos
+*/
+
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const jwt = require('jsonwebtoken');

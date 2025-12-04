@@ -12,8 +12,8 @@ const userRoutes = express.Router();
 
 // Middleware de autorización para usuarios (rol 'user')
 userRoutes.use(async (req, res, next) => {
-    console.log('🔍 Verificando rol de usuario en user middleware...');
-    console.log('📋 req.user:', req.user);
+    console.log('Verificando rol de usuario en user middleware...');
+    console.log('req.user:', req.user);
     
     // Verificar que el usuario esté autenticado
     if (!req.user) {
@@ -26,7 +26,7 @@ userRoutes.use(async (req, res, next) => {
     
     // Verifica si el usuario tiene rol de "user" o "admin" (los admins pueden acceder a rutas de user)
     if (req.user.role === "user" || req.user.role === "admin") {
-        console.log(`✅ USER/ADMIN ROLE (${req.user.role}) - Acceso autorizado`);
+        console.log(`USER/ADMIN ROLE (${req.user.role}) - Acceso autorizado`);
         next();
     } else {
         // Si NO es usuario normal o admin, responde con 403 (Forbidden)

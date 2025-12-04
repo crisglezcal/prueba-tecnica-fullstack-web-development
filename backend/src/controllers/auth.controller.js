@@ -50,7 +50,7 @@ const login = async (req, res) => {
         
         if (result.success) {
             // Login exitoso
-            console.log('✅ Login exitoso para usuario id_user:', result.user.id_user);
+            console.log('Login exitoso para usuario id_user:', result.user.id_user);
             
             res.status(200)
                 .set('Authorization', `Bearer ${result.token}`)  // Cabecera HTTP
@@ -59,11 +59,11 @@ const login = async (req, res) => {
                     secure: process.env.NODE_ENV === 'production',
                     sameSite: 'lax',
                     maxAge: 24 * 60 * 60 * 1000 // 24 horas
-                })           // Cookie HTTP-only
+                })           
                 .json({ 
                     success: true,
                     role: result.user.role,
-                    id_user: result.user.id_user,    // ← CAMBIAR id por id_user
+                    id_user: result.user.id_user,    
                     email: result.user.email,
                     name: result.user.name,
                     surname: result.user.surname,
@@ -79,7 +79,7 @@ const login = async (req, res) => {
         
     } catch (error) {
         // Error 400: Bad Request
-        console.error('❌ Error en login controller:', error);
+        console.error('Error en login controller:', error);
         res.status(400).json({ 
             success: false,
             msg: error.message 
