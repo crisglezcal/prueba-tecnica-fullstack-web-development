@@ -9,7 +9,7 @@
 */
 
 require('dotenv').config(); // Variables de entorno
-const gredosModel = require('../models/gredos.model.js'); // Importa el modelo que formatea/estructura los datos
+const gredosOperation = require('../utils/gredos.utils.js') // Importa el modelo que formatea/estructura los datos
 const gredosService = require('../services/gredos.service.js'); // Importa el servicio que se comunica con APIs externas
 
 // ========================================================================================================================================
@@ -45,7 +45,7 @@ async function getObservations(req, res) {
     
     // Formatear los datos obtenidos
       // Llama al modelo para transformar datos crudos a formato útil
-    const formattedObservations = gredosModel.formatObservations(observations);
+    const formattedObservations = gredosOperation.formatObservations(observations);
     
     // Respuesta HTTP al frontend
       // res.json() envía una respuesta JSON al cliente
@@ -80,7 +80,7 @@ async function getSpecies(req, res) {
     const species = await gredosService.getSpeciesList();
     
     // El modelo transforma la lista de especies
-    const formattedSpecies = gredosModel.formatSpecies(species);
+    const formattedSpecies = gredosOperation.formatSpecies(species);
     
     // Enviar respuesta al cliente
     res.json({
@@ -126,7 +126,7 @@ async function searchSpecies(req, res) {
     const results = await gredosService.searchSpecies(q);
     
     // Formatear resultados
-    const formattedResults = gredosModel.formatSearchResults(results);
+    const formattedResults = gredosOperation.formatSearchResults(results);
     
     // Respuesta
     res.json({
@@ -166,7 +166,7 @@ async function getSpeciesDetail(req, res) {
     const speciesDetail = await gredosService.getSpeciesDetail(code);
     
     // Formatear detalles
-    const formattedDetail = gredosModel.formatSpeciesDetail(speciesDetail);
+    const formattedDetail = gredosOperation.formatSpeciesDetail(speciesDetail);
     
     // Respuesta al cliente
     res.json({
@@ -225,7 +225,7 @@ async function getHotspots(req, res) {
     });
 
     // Formatear resultados
-    const formattedHotspots = gredosModel.formatHotspots(hotspots);
+    const formattedHotspots = gredosOperation.formatHotspots(hotspots);
 
     // Respuesta
     res.json({

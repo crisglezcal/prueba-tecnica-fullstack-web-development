@@ -4,9 +4,9 @@
     * Auth: userId obtenido del token JWT
 */
 
-const navarreviscaService = require('../services/navarrevisca.service.js');
-const favoritesService = require('../services/favorites.service.js');
-const navarreviscaDetailModel = require('../models/navarreviscaDetail.model.js');
+const navarreviscaModel = require('../models/navarrevisca.model.js');
+const favoritesModel = require('../models/favorites.model.js');
+const navarreviscaDetailOperation = require('../utils/navarreviscaDetail.utils.js');
 
 // ========================================================================================================================================  
 // 1. GET DETALLE DE AVE 
@@ -18,7 +18,7 @@ async function getAveDetail(req, res) {
     const birdId = parseInt(req.params.id);
     
     // Obtiene información completa del ave desde el servicio
-    const bird = await navarreviscaService.getBirdById(birdId);
+    const bird = await navarreviscaModel.getBirdById(birdId);
     
     // Obtiene userId del token si está autenticado
     let userFavorites = [];
@@ -31,12 +31,12 @@ async function getAveDetail(req, res) {
         role: req.token.role
       };
       // Obtiene lista de favoritos del usuario para marcar si esta ave es favorita
-      userFavorites = await favoritesService.getUserFavorites(req.token.id);
+      userFavorites = await favoritesModel.getUserFavorites(req.token.id);
     }
     
     // Formatea detalle completo del ave
       // Incluye información sobre si es favorita del usuario autenticado
-    const formattedBird = navarreviscaDetailModel.formatAveDetailComplete(bird, userFavorites);
+    const formattedBird = navarreviscaDetailOperation.formatAveDetailComplete(bird, userFavorites);
     
     // Envia respuesta exitosa
     res.json({
@@ -85,10 +85,10 @@ async function addToFavorites(req, res) {
     const userEmail = req.token.email;
     
     // Verifica que el ave existe antes de añadir a favoritos
-    await navarreviscaService.getBirdById(birdId);
+    await navarreviscaModel.getBirdById(birdId);
     
     // Verifica si ya es favorito para evitar duplicados
-    const alreadyFavorite = await favoritesService.isFavorite(userId, birdId);
+    const alreadyFavorite = await favoritesModel.isFavorite(userId, birdId);
     if (alreadyFavorite) {
       return res.status(409).json({
         success: false,
@@ -97,7 +97,7 @@ async function addToFavorites(req, res) {
     }
     
     // Añade a favoritos
-    const newFavorite = await favoritesService.addFavorite(userId, birdId);
+    const newFavorite = await favoritesModel.addFavorite(userId, birdId);
     
     // Envia respuesta exitosa (201 Created)
     res.status(201).json({

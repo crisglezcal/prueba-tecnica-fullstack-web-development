@@ -4,8 +4,8 @@
     * Auth: userId obtenido del token JWT
 */
 
-const favoritesService = require('../services/favorites.service.js');
 const favoritesModel = require('../models/favorites.model.js');
+const favoritesOperation = require('../utils/favorites.utils.js');
 
 // ========================================================================================================================================  
 // 1. GET MIS FAVORITOS
@@ -31,10 +31,10 @@ async function getMyFavorites(req, res) {
     console.log(`Controller: GET /favoritos para usuario ${userId} (${userEmail}, ${userRole})`);
     
     // Obtiene favoritos del usuario con detalles completos de las aves
-    const favorites = await favoritesService.getUserFavoritesWithDetails(userId);
+    const favorites = await favoritesModel.getUserFavoritesWithDetails(userId);
     
     // Formatea la lista de favoritos para la respuesta
-    const formattedFavorites = favoritesModel.formatFavoritesList(favorites);
+    const formattedFavorites = favoritesOperation.formatFavoritesList(favorites);
     
     // Envia respuesta exitosa
     res.json({
@@ -85,7 +85,7 @@ async function removeFavorite(req, res) {
     console.log(`Controller: DELETE /favoritos/${favoriteId} para usuario ${userId} (${userEmail})`);
     
     // Elimina favorito a través del servicio
-    const result = await favoritesService.removeFavorite(favoriteId, userId);
+    const result = await favoritesModel.removeFavorite(favoriteId, userId);
     
     // Verifica si la eliminación fue exitosa
     if (!result.success) {
@@ -98,7 +98,7 @@ async function removeFavorite(req, res) {
     }
     
     // Formatea respuesta de eliminación
-    const formattedResponse = favoritesModel.formatRemoveResponse(favoriteId, userId);
+    const formattedResponse = favoritesOperation.formatRemoveResponse(favoriteId, userId);
     
     // Envia respuesta exitosa
     res.json({

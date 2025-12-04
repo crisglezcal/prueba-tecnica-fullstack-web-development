@@ -4,7 +4,7 @@
     * Maneja tokens JWT
 */
 
-const authService = require('../services/auth.service');
+const authService = require('../models/auth.service');
 
 // ========================================================================================================================================  
 // 1. SIGNUP - Registro de usuario

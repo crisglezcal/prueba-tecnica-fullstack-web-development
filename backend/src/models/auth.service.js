@@ -5,7 +5,7 @@
     * Genera tokens JWT al iniciar sesión
 */
 
-const authModel = require('../models/auth.model');
+const authModel = require('./auth.model');
 const { createToken } = require('../config/jsonWebToken');
 
 // Servicio de autenticación

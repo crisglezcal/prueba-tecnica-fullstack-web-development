@@ -1,127 +1,98 @@
 /* 
-📑 NAVARREVISCA MODEL → navarrevisca.model.js
-    * Modelo para formatear datos de la tabla navarrevisca_birds
-    * TODOS los campos son requeridos (NOT NULL)
+📩 NAVARREVISCA MODEL → navarrevisca.model.js
+    * Servicio ESENCIAL para la tabla Navarrevisca_birds
+    * Hace consultas SQL a la base de datos PostgreSQL
+    * Maneja errores de conexión y de consultas
+    * No transforma datos, solo los obtiene crudos
 */
 
-// =============================================================================================================================
-// 1. FORMATEAR LISTA DE AVES PARA RESPUESTA GET
-// =============================================================================================================================
+const pool = require('../config/database.js');
 
-function formatAvesList(avesFromDb) {
-
-  // Recibe: Array de objetos de PostgreSQL
-  // Devuelve: Array formateado para frontend
+class NavarreviscaModel {
   
-  return avesFromDb.map(ave => ({
-    id: ave.id_bird,                     
-    nombre_comun: ave.common_name,       
-    nombre_cientifico: ave.scientific_name, 
-    orden: ave.order,                    
-    familia: ave.family,                 
-    descripcion_corta: truncateText(ave.description, 150), 
-    imagen: ave.image,                   
-    nivel_amenaza: ave.threat_level,     
-    tiene_imagen: !!ave.image,
-    url_detalle: `/aves/navarrevisca/detalle/${ave.id_bird}`
-  }));
-}
-
-// =============================================================================================================================
-// 2. FORMATEAR UN AVE INDIVIDUAL PARA DETALLES
-// =============================================================================================================================
-
-function formatAveDetail(aveFromDb) {
-
-  // Recibe: Un objeto ave de PostgreSQL
-  // Devuelve: Objeto formateado para vista detalle
-  
-  if (!aveFromDb) return null;
-  
-  return {
-    id: aveFromDb.id_bird,
-    nombre_comun: aveFromDb.common_name,
-    nombre_cientifico: aveFromDb.scientific_name,
-    orden: aveFromDb.order,
-    familia: aveFromDb.family,
-    descripcion_completa: aveFromDb.description,
-    imagen: aveFromDb.image,
-    nivel_amenaza: aveFromDb.threat_level,
-    metadata: {
-      tiene_descripcion: !!aveFromDb.description,
-      tiene_imagen: !!aveFromDb.image,
-      nivel_amenaza_codigo: getThreatLevelCode(aveFromDb.threat_level)
+  // 1. OBTENER TODAS LAS AVES
+  async getAllBirds() {
+    try {
+      console.log('Model: Obteniendo todas las aves...');
+      
+      const query = `
+        SELECT * FROM "Navarrevisca_birds"
+        ORDER BY common_name ASC
+      `;
+      
+      const result = await pool.query(query);
+      
+      return result.rows;
+      
+    } catch (error) {
+      console.error('Model Error en getAllBirds:', error);
+      throw new Error('Error al obtener aves: ' + error.message);
     }
-  };
-}
-
-// =============================================================================================================================
-// 3. FORMATEAR DATOS PARA CREAR NUEVA AVE (TODOS REQUERIDOS)
-// =============================================================================================================================
-
-function formatAveForCreate(aveData) {
-
-  // Recibe: Datos del frontend (YA VALIDADOS)
-  // Devuelve: Objeto listo para INSERT SQL
-  // TODOS los campos son requeridos
+  }
   
-  return {
-    common_name: aveData.common_name.trim(),
-    scientific_name: aveData.scientific_name.trim(),
-    order: aveData.order.trim(),
-    family: aveData.family.trim(),
-    description: aveData.description.trim(),
-    image: aveData.image.trim(),
-    threat_level: aveData.threat_level 
-  };
-}
-
-// =============================================================================================================================
-// 4. FORMATEAR RESPUESTA DESPUÉS DE CREAR
-// =============================================================================================================================
-
-function formatCreatedAve(aveFromDb) {
-
-  // Recibe: Resultado de INSERT
-  // Devuelve: Respuesta formateada para frontend
+  // 2. OBTENER AVE POR ID
+  async getBirdById(id) {
+    try {
+      console.log(`Model: Obteniendo ave ID ${id}...`);
+      
+      const query = 'SELECT * FROM "Navarrevisca_birds" WHERE id_bird = $1';
+      const result = await pool.query(query, [id]);
+      
+      if (result.rows.length === 0) {
+        throw new Error(`Ave con ID ${id} no encontrada`);
+      }
+      
+      return result.rows[0];
+      
+    } catch (error) {
+      console.error(`Model Error en getBirdById(${id}):`, error);
+      throw error;
+    }
+  }
   
-  return {
-    id: aveFromDb.id_bird,
-    nombre_comun: aveFromDb.common_name,
-    nombre_cientifico: aveFromDb.scientific_name,
-    mensaje: `Ave "${aveFromDb.common_name}" creada exitosamente`,
-    timestamp: new Date().toISOString()
-  };
+  // 3. CREAR NUEVA AVE
+  async createBird(birdData) {
+    try {
+      console.log('Model: Creando nueva ave...');
+      
+      const query = `
+        INSERT INTO "Navarrevisca_birds" (
+          common_name,
+          scientific_name,
+          "order",
+          family,
+          description,
+          image,
+          threat_level
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *
+      `;
+      
+      const params = [
+        birdData.common_name,
+        birdData.scientific_name,
+        birdData.order,
+        birdData.family,
+        birdData.description,
+        birdData.image,
+        birdData.threat_level
+      ];
+      
+      const result = await pool.query(query, params);
+      return result.rows[0]; // Solo devolver el ave creada
+      
+    } catch (error) {
+      console.error('Model Error en createBird:', error);
+      
+      // Solo manejar error de duplicado, el resto pasa al controller
+      if (error.code === '23505') {
+        throw new Error(`Ya existe un ave con el nombre científico: ${birdData.scientific_name}`);
+      }
+      
+      throw error; // Pasar otros errores al controller
+    }
+  }
 }
 
-// =============================================================================================================================
-// FUNCIONES AUXILIARES PRIVADAS
-// =============================================================================================================================
-
-// Acortar texto para vista lista
-function truncateText(text, maxLength) {
-  if (!text || text.length <= maxLength) return text || '';
-  return text.substring(0, maxLength) + '...';
-}
-
-// Convertir nivel de amenaza a código para colores frontend
-function getThreatLevelCode(threat_level) {
-  const threatLevels = {
-    'EX': 'extinto',                    // Extinto (⚫)
-    'CR': 'peligro-critico',            // En peligro crítico (🔴)
-    'EN': 'en-peligro',                 // En peligro (🟣)
-    'VU': 'vulnerable',                 // Vulnerable (🟠)
-    'NT': 'casi-amenazado',             // Casi amenazado (🟡)
-    'LC': 'preocupacion-menor'          // Preocupación menor (🟢)
-  };
-  
-  return threatLevels[threat_level] || 'no-evaluado';
-}
-
-// Exportar todas las funciones del modelo
-module.exports = {
-  formatAvesList,
-  formatAveDetail,
-  formatAveForCreate,
-  formatCreatedAve
-};
+// Exportar instancia
+module.exports = new NavarreviscaModel();
