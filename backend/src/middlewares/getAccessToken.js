@@ -1,102 +1,88 @@
 /*
 🔍 GET ACCESS TOKEN MIDDLEWARE → getAccessToken.js
     * Middleware para extraer token JWT de diferentes fuentes
-    * Busca token en: Authorization header → Cookies
-    * Estándar para APIs REST y aplicaciones web
+    * Busca token en: Query String → Authorization header → Cookies
+    * IMPORTANTE: NO bloquea si no hay token, solo lo extrae si existe
 */
 
 const express = require("express");
 const getAccessToken = express.Router();
 
 // Middleware para extraer token de la petición
-    // Este es generalmente el PRIMER middleware de autenticación en la cadena
 getAccessToken.use(async (req, res, next) => {
-    // Obtiene cabeceras relevantes para autenticación
-    const { cookie, authorization } = req.headers;
-    console.log("Buscando token en petición...");
-
-    // 1. PRIORIDAD: Cabecera Authorization (estándar REST API)
+    // 1. PRIORIDAD: Query string (para Google OAuth callback)
+    if (req.query && req.query.token) {
+        console.log("✅ Token encontrado en query string (Google OAuth)");
+        req.token = req.query.token;
+        req.tokenSource = 'query';
+        return next();
+    }
+    
+    // 2. PRIORIDAD: Cabecera Authorization (estándar REST API)
+    const { authorization, cookie } = req.headers;
+    
     if (authorization && authorization.includes(`Bearer`)) {
-        console.log("Token encontrado en cabecera Authorization");
+        console.log("✅ Token encontrado en cabecera Authorization");
         
         // Extrae token del formato: "Bearer <token>"
         const token = authorization.split(' ')[1];
         
         if (token && token !== 'null' && token !== 'undefined') {
-            // Token válido encontrado en cabecera
             req.token = token;
+            req.tokenSource = 'header';
             console.log("Token extraído de Authorization header");
-            next(); // Continua con el siguiente middleware
+            return next();
         } else {
-            // Cabecera presente pero token vacío o inválido
-            console.warn("Cabecera Authorization presente pero token vacío");
-            res.status(403).json({
-                success: false,
-                error: 'Token inválido',
-                message: 'El token en la cabecera Authorization está vacío',
-                help: 'Formato correcto: Authorization: Bearer <tu_token_jwt>'
-            });
+            console.warn("⚠️ Cabecera Authorization presente pero token vacío");
         }
+    }
 
-    // 2. ALTERNATIVA: Cookies (para aplicaciones web tradicionales)
-    } else if (cookie && cookie.includes(`access_token=`)) {
-        console.log("Token encontrado en cookies");
+    // 3. ALTERNATIVA: Cookies (para aplicaciones web tradicionales)
+    if (cookie && cookie.includes(`access_token=`)) {
+        console.log("✅ Token encontrado en cookies");
         
         try {
-
             // Extraer token de las cookies
-                // Las cookies vienen como: "access_token=abc123; otra_cookie=valor"
             const cookies = cookie.split(';').map(c => c.trim());
-            
-            // Buscar la cookie access_token
             const accessTokenCookie = cookies.find(c => c.startsWith('access_token='));
             
             if (accessTokenCookie) {
                 const token = accessTokenCookie.split('=')[1];
                 
                 if (token && token !== 'null' && token !== 'undefined') {
-                    // Token válido encontrado en cookies
                     req.token = token;
+                    req.tokenSource = 'cookie';
                     console.log("Token extraído de cookies");
-                    next();
-                } else {
-                    throw new Error('Cookie access_token vacía');
+                    return next();
                 }
-            } else {
-                throw new Error('Cookie access_token no encontrada');
             }
-            
         } catch (error) {
-            console.error("Error procesando cookies:", error.message);
-            res.status(403).json({
-                success: false,
-                error: 'Error en cookies',
-                message: 'No se pudo extraer el token de las cookies',
-                help: 'Asegúrate de tener una cookie llamada "access_token" con un token JWT válido'
-            });
+            console.error("❌ Error procesando cookies:", error.message);
         }
-        
-    } else {
-        // No se encontró token en ninguna fuente
-        console.warn("Token no encontrado en headers ni cookies");
-        console.log("Headers recibidos:", {
-            hasAuthorization: !!authorization,
-            hasCookie: !!cookie,
-            authorization: authorization ? "PRESENTE" : "AUSENTE",
-            cookie: cookie ? "PRESENTE" : "AUSENTE"
-        });
-        
-        res.status(403).json({
-            success: false,
-            error: 'Acceso denegado',
-            message: 'No se proporcionó token de autenticación',
-            help: 'Incluye un token JWT en la cabecera Authorization (Bearer token) o en cookies (access_token)',
-            examples: {
-                header: 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-                cookie: 'Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-            }
-        });
     }
+
+    // 4. ALTERNATIVA: Body JSON (para algunas APIs)
+    if (req.body && req.body.token) {
+        console.log("✅ Token encontrado en body JSON");
+        req.token = req.body.token;
+        req.tokenSource = 'body';
+        return next();
+    }
+
+    // 5. NO se encontró token - IMPORTANTE: NO bloquear, solo continuar
+    console.log("ℹ️ Token no encontrado en ninguna fuente");
+    console.log("📋 Headers recibidos:", {
+        hasAuthorization: !!authorization,
+        hasCookie: !!cookie,
+        authorization: authorization || 'AUSENTE',
+        cookie: cookie ? 'PRESENTE' : 'AUSENTE'
+    });
+    
+    // No establecer req.token, pero SIEMPRE continuar
+    // Algunas rutas (como /login) no requieren token
+    req.token = null;
+    req.tokenSource = 'none';
+    next();
 });
 
 // Exportar middleware

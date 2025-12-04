@@ -13,7 +13,6 @@ const authService = require('../services/auth.service');
 const signup = async (req, res) => {
     try {
         // Obtener datos del cuerpo de la petición
-            // Valores por defecto para name y surname en caso de que no se envíen
         const { email, password, role, name = '', surname = '' } = req.body;
         
         // Pasar TODOS los parámetros al servicio
@@ -51,29 +50,38 @@ const login = async (req, res) => {
         
         if (result.success) {
             // Login exitoso
-            // IMPORTANTE: Ahora envía el token en el cuerpo JSON también
+            console.log('✅ Login exitoso para usuario id_user:', result.user.id_user);
+            
             res.status(200)
                 .set('Authorization', `Bearer ${result.token}`)  // Cabecera HTTP
-                .cookie('access_token', result.token)           // Cookie HTTP-only
+                .cookie('access_token', result.token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'lax',
+                    maxAge: 24 * 60 * 60 * 1000 // 24 horas
+                })           // Cookie HTTP-only
                 .json({ 
-                    success: true,  // Añadir success para consistencia
+                    success: true,
                     role: result.user.role,
-                    id: result.user.id,    
+                    id_user: result.user.id_user,    // ← CAMBIAR id por id_user
                     email: result.user.email,
-                    token: result.token  // ← ¡ESTO ES LO QUE FALTA!
+                    name: result.user.name,
+                    surname: result.user.surname,
+                    token: result.token
                 });
         } else {
             // Error 401: Unauthorized - Credenciales incorrectas
             res.status(401).json({ 
-                success: false,  // Añadir success para consistencia
+                success: false,
                 msg: result.error 
             });
         }
         
     } catch (error) {
         // Error 400: Bad Request
+        console.error('❌ Error en login controller:', error);
         res.status(400).json({ 
-            success: false,  // Añadir success para consistencia
+            success: false,
             msg: error.message 
         });
     }
@@ -88,15 +96,15 @@ const logout = async (req, res) => {
         // Cerrar sesión eliminando el token
         res.status(200)
             .set('Authorization', "")          // Limpiar cabecera
-            .cookie('access_token', "")       // Limpiar cookie
+            .clearCookie('access_token')       // Limpiar cookie correctamente
             .json({ 
-                success: true,  // Añadir success para consistencia
+                success: true,
                 msg: "Sesión cerrada" 
             });
     } catch (error) {
         // Error 400: Bad Request
         res.status(400).json({ 
-            success: false,  // Añadir success para consistencia
+            success: false,
             msg: error.message 
         });
     }
