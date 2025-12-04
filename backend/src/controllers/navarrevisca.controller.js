@@ -4,8 +4,8 @@
     * TODOS los campos ya están validados por express-validator (middleware)
 */
 
-const navarreviscaService = require('../services/navarrevisca.service.js');
 const navarreviscaModel = require('../models/navarrevisca.model.js');
+const navarreviscaOperation = require('../utils/navarrevisca.utils.js');
 
 // ========================================================================================================================================  
 // LISTA TODAS LAS AVES (PÚBLICO)
@@ -17,10 +17,10 @@ async function getAves(req, res) {
     console.log('Controller: GET /aves/navarrevisca');
     
     // 1. Obtener datos del service
-    const aves = await navarreviscaService.getAllBirds();
+    const aves = await navarreviscaModel.getAllBirds();
     
     // 2. Formatear datos con el model
-    const avesFormateadas = navarreviscaModel.formatAvesList(aves);
+    const avesFormateadas = navarreviscaOperation.formatAvesList(aves);
     
     // 3. Enviar respuesta
     res.json({
@@ -74,13 +74,13 @@ async function createAve(req, res) {
     
     // 2. Formatear datos para SQL con el model
         // El model NO debe asignar valores por defecto, todos son requeridos
-    const aveData = navarreviscaModel.formatAveForCreate(req.body/* , userId */);
+    const aveData = navarreviscaOperation.formatAveForCreate(req.body/* , userId */);
     
     // 3. Crear en base de datos con el service
-    const nuevaAve = await navarreviscaService.createBird(aveData);
+    const nuevaAve = await navarreviscaModel.createBird(aveData);
     
     // 4. Formatear respuesta con el model
-    const respuestaFormateada = navarreviscaModel.formatCreatedAve(nuevaAve);
+    const respuestaFormateada = navarreviscaOperation.formatCreatedAve(nuevaAve);
     
     // 5. Enviar respuesta exitosa
     res.status(201).json({

@@ -4,8 +4,8 @@
     * AUTH: Verifica token y rol de administrador
 */
 
-const adminService = require('../services/admin.service.js');
 const adminModel = require('../models/admin.model.js');
+const adminOperation = require('../utils/admin.utils.js');
 
 // ========================================================================================================================================
 // 1. CREAR AVE
@@ -38,13 +38,13 @@ async function createBird(req, res) {
     const adminEmail = req.token.email;
     
     // Transforma los datos del request al formato que necesita la base de datos
-    const birdData = adminModel.formatBirdForCreate(req.body, adminId);
+    const birdData = adminOperation.formatBirdForCreate(req.body, adminId);
     
     // Crea en base de datos a través del servicio
-    const newBird = await adminService.createBird(birdData);
+    const newBird = await adminModel.createBird(birdData);
     
     // Formatea respuesta para el cliente
-    const formattedResponse = adminModel.formatBirdResponse(newBird, 'created');
+    const formattedResponse = adminOperation.formatBirdResponse(newBird, 'created');
     
     // Envia respuesta exitosa
     res.status(201).json({
@@ -108,13 +108,13 @@ async function updateBird(req, res) {
     const adminEmail = req.token.email;
     
     // Formatea datos para actualización
-    const updateData = adminModel.formatBirdForUpdate(req.body, adminId);
+    const updateData = adminOperation.formatBirdForUpdate(req.body, adminId);
     
     // Actualiza en base de datos
-    const updatedBird = await adminService.updateBird(birdId, updateData);
+    const updatedBird = await adminModel.updateBird(birdId, updateData);
     
     // Formatea respuesta
-    const formattedResponse = adminModel.formatBirdResponse(updatedBird, 'updated');
+    const formattedResponse = adminOperation.formatBirdResponse(updatedBird, 'updated');
     
     // Envia respuesta exitosa
     res.json({
@@ -179,10 +179,10 @@ async function deleteBird(req, res) {
     
     // Eliminar de la base de datos
     // El servicio también elimina registros relacionados en favoritos
-    const result = await adminService.deleteBird(birdId);
+    const result = await adminModel.deleteBird(birdId);
     
     // Formatea respuesta
-    const formattedResponse = adminModel.formatBirdResponse({ id_bird: birdId }, 'deleted');
+    const formattedResponse = adminOperation.formatBirdResponse({ id_bird: birdId }, 'deleted');
     
     // Envia respuesta exitosa con metadata
     res.json({
