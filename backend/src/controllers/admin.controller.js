@@ -1,7 +1,7 @@
 /* 
 🎮 ADMIN CONTROLLER → admin.controller.js
     * Controlador para operaciones de administrador
-    * AUTH: Verifica token y rol de administrador
+    * IMPORTANTE: Usa req.user, NO req.token
 */
 
 const adminModel = require('../models/admin.model.js');
@@ -13,29 +13,34 @@ const adminOperation = require('../utils/admin.utils.js');
 
 async function createBird(req, res) {
   try {
-    console.log('Admin controller: Creando nueva ave');
+    console.log('=== CREATE BIRD CONTROLLER ===');
+    console.log('req.user:', req.user);
     
-    // Verifica token
-    if (!req.token || !req.token.id) {
+    // Verifica que el usuario esté autenticado (usa req.user, NO req.token)
+    if (!req.user) {
       return res.status(401).json({
         success: false,
-        error: 'Autenticación requerida'
+        error: 'Autenticación requerida',
+        message: 'Debes iniciar sesión como administrador'
       });
     }
     
     // Verifica si el usuario tiene rol de administrador
-    if (req.token.role !== 'admin') {
+    if (req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         error: 'Acceso denegado',
         message: 'Se requiere rol de administrador',
-        user_role: req.token.role
+        user_role: req.user.role
       });
     }
     
-    // Extrae información del administrador del token
-    const adminId = req.token.id;
-    const adminEmail = req.token.email;
+    // Extrae información del administrador del usuario autenticado
+    const adminId = req.user.id_user; // ← ¡CAMBIA req.token.id por req.user.id_user!
+    const adminEmail = req.user.email;
+    
+    console.log(`Creando ave por admin: ${adminEmail} (ID: ${adminId})`);
+    console.log('Datos recibidos:', req.body);
     
     // Transforma los datos del request al formato que necesita la base de datos
     const birdData = adminOperation.formatBirdForCreate(req.body, adminId);
@@ -57,9 +62,9 @@ async function createBird(req, res) {
     });
     
   } catch (error) {
-    console.error('Admin Controller error en createBird:', error);
+    console.error('❌ Admin Controller error en createBird:', error);
     
-        // Error 409: Conflicto - Ave duplicada
+    // Error 409: Conflicto - Ave duplicada
     if (error.message.includes('Ya existe')) {
       return res.status(409).json({
         success: false,
@@ -85,27 +90,33 @@ async function updateBird(req, res) {
   try {
     // Obtener ID del ave desde los parámetros de la URL
     const birdId = parseInt(req.params.id);
-    console.log(`Admin Controller: Actualizando ave ID ${birdId}`);
+    console.log(`=== UPDATE BIRD CONTROLLER ===`);
+    console.log(`Actualizando ave ID ${birdId}`);
+    console.log('req.user:', req.user);
+    console.log('Datos:', req.body);
     
-    // Verificar token y rol de admin (misma lógica que create)
-    if (!req.token || !req.token.id) {
+    // Verificar usuario autenticado (usa req.user)
+    if (!req.user) {
       return res.status(401).json({
         success: false,
-        error: 'Autenticación requerida'
+        error: 'Autenticación requerida',
+        message: 'Debes iniciar sesión como administrador'
       });
     }
     
-    if (req.token.role !== 'admin') {
+    if (req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         error: 'Acceso denegado',
         message: 'Se requiere rol de administrador',
-        user_role: req.token.role
+        user_role: req.user.role
       });
     }
     
-    const adminId = req.token.id;
-    const adminEmail = req.token.email;
+    const adminId = req.user.id_user; // ← CAMBIAR AQUÍ
+    const adminEmail = req.user.email;
+    
+    console.log(`Actualizando por admin: ${adminEmail} (ID: ${adminId})`);
     
     // Formatea datos para actualización
     const updateData = adminOperation.formatBirdForUpdate(req.body, adminId);
@@ -127,7 +138,7 @@ async function updateBird(req, res) {
     });
     
   } catch (error) {
-    console.error(`Admin Controller error en updateBird:`, error);
+    console.error(`❌ Admin Controller error en updateBird:`, error);
     
     // Error 404: Ave no encontrada
     if (error.message.includes('no encontrada')) {
@@ -155,30 +166,34 @@ async function deleteBird(req, res) {
   try {
     // Obtener ID del ave desde los parámetros de la URL
     const birdId = parseInt(req.params.id);
-    console.log(`Admin Controller: Eliminando ave ID ${birdId}`);
+    console.log(`=== DELETE BIRD CONTROLLER ===`);
+    console.log(`Eliminando ave ID ${birdId}`);
+    console.log('req.user:', req.user);
     
-    // Verificar token y rol de admin
-    if (!req.token || !req.token.id) {
+    // Verificar usuario autenticado (usa req.user)
+    if (!req.user) {
       return res.status(401).json({
         success: false,
-        error: 'Autenticación requerida'
+        error: 'Autenticación requerida',
+        message: 'Debes iniciar sesión como administrador'
       });
     }
     
-    if (req.token.role !== 'admin') {
+    if (req.user.role !== 'admin') {
       return res.status(403).json({
         success: false,
         error: 'Acceso denegado',
         message: 'Se requiere rol de administrador',
-        user_role: req.token.role
+        user_role: req.user.role
       });
     }
     
-    const adminId = req.token.id;
-    const adminEmail = req.token.email;
+    const adminId = req.user.id_user; // ← CAMBIAR AQUÍ
+    const adminEmail = req.user.email;
+    
+    console.log(`Eliminando por admin: ${adminEmail} (ID: ${adminId})`);
     
     // Eliminar de la base de datos
-    // El servicio también elimina registros relacionados en favoritos
     const result = await adminModel.deleteBird(birdId);
     
     // Formatea respuesta
@@ -193,12 +208,12 @@ async function deleteBird(req, res) {
         email: adminEmail
       },
       metadata: {
-        favorites_deleted: result.favoritesDeleted || 0  // Número de favoritos eliminados
+        favorites_deleted: result.favoritesDeleted || 0
       }
     });
     
   } catch (error) {
-    console.error(`Admin Controller error en deleteBird:`, error);
+    console.error(`❌ Admin Controller error en deleteBird:`, error);
     
     // Error 404: Ave no encontrada
     if (error.message.includes('no encontrada')) {

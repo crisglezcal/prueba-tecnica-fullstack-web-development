@@ -89,13 +89,10 @@ function App() {
             <Route 
               path="/admin" 
               element={
-                isAuthenticated && userRole === 'admin' ? 
-                  <Administrador 
-                    isAuthenticated={isAuthenticated}
-                    userRole={userRole}
-                    token={localStorage.getItem('authToken')}
-                  /> : 
-                  <Navigate to="/" />
+                <Administrador 
+                  isAuthenticated={isAuthenticated} 
+                  userRole={userRole} 
+                />
               } 
             />
           </Routes>

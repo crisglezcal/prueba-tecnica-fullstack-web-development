@@ -29,4 +29,13 @@ router.put('/aves/:id', getAccessToken, decodeToken, adminRoutes,validateIdParam
     // http://localhost:3001/admin/aves/1
 router.delete('/aves/:id', getAccessToken, decodeToken, adminRoutes,validateIdParam, adminController.deleteBird);
 
+// PRUEBA DE RUTA PROTEGIDA
+router.get('/test-auth', getAccessToken, decodeToken, adminRoutes, (req, res) => {
+    res.json({
+        success: true,
+        message: 'Autenticación exitosa',
+        user: req.user
+    });
+});
+
 module.exports = router;

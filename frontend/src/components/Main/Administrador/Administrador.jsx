@@ -7,33 +7,12 @@ function Administrador() {
   const [birds, setBirds] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const showMessage = (icon, title, text) => {
-    Swal.fire({
-      icon,
-      title,
-      text,
-      confirmButtonColor: '#053f27ff',
-      confirmButtonText: 'Aceptar',
-      timer: icon === 'success' ? 2000 : undefined
-    });
-  };
-
   useEffect(() => {
     loadBirds();
   }, []);
 
   const loadBirds = async () => {
     try {
-      Swal.fire({
-        title: 'Cargando aves...',
-        text: 'Por favor, espera',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        didOpen: () => {
-          Swal.showLoading();
-        }
-      });
-
       const response = await fetch('http://localhost:3001/aves/navarrevisca');
       
       if (!response.ok) {
@@ -42,12 +21,6 @@ function Administrador() {
 
       const result = await response.json();
       const avesArray = result.data || [];
-      
-      Swal.close();
-      
-      if (avesArray.length === 0) {
-        showMessage('info', 'Base de datos vacía', 'No se encontraron aves en la base de datos.');
-      }
 
       const mappedBirds = avesArray.map(bird => ({
         id: bird.id,
@@ -63,8 +36,12 @@ function Administrador() {
       
     } catch (error) {
       console.error('Error cargando aves:', error);
-      Swal.close();
-      showMessage('error', 'Error de conexión', 'No se pudo conectar con el servidor.');
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo cargar las aves',
+        icon: 'error',
+        confirmButtonColor: '#053f27ff'
+      });
       setBirds([]);
     } finally {
       setLoading(false);
@@ -74,7 +51,7 @@ function Administrador() {
   const handleDelete = async (birdId, birdName) => {
     const result = await Swal.fire({
       title: '¿Eliminar ave?',
-      text: `¿Estás seguro de eliminar "${birdName}"? Esta acción no se puede deshacer.`,
+      text: `¿Estás seguro de eliminar "${birdName}"?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -87,6 +64,8 @@ function Administrador() {
       try {
         const token = localStorage.getItem('authToken');
         
+        console.log(`Eliminando ave ${birdId}...`);
+        
         const deleteResponse = await fetch(`http://localhost:3001/admin/aves/${birdId}`, {
           method: 'DELETE',
           headers: {
@@ -95,25 +74,25 @@ function Administrador() {
           }
         });
 
-        if (!deleteResponse.ok) {
-          const errorData = await deleteResponse.json();
-          throw new Error(errorData.message || 'Error al eliminar el ave');
-        }
-
-        setBirds(birds.filter(bird => bird.id !== birdId));
+        const responseText = await deleteResponse.text();
+        console.log('Respuesta DELETE:', responseText);
+        
+        // Recargar la lista
+        await loadBirds();
         
         Swal.fire({
-          title: '¡Eliminado!',
-          text: `"${birdName}" ha sido eliminado correctamente.`,
+          title: 'Éxito',
+          text: 'La lista se ha actualizado',
           icon: 'success',
           confirmButtonColor: '#053f27ff',
           timer: 2000
         });
+        
       } catch (error) {
-        console.error('Error eliminando ave:', error);
+        console.error('Error:', error);
         Swal.fire({
           title: 'Error',
-          text: error.message || 'No se pudo eliminar el ave. Intenta nuevamente.',
+          text: 'No se pudo completar la acción',
           icon: 'error',
           confirmButtonColor: '#053f27ff'
         });
@@ -137,7 +116,7 @@ function Administrador() {
           <option value="CR">CR - En peligro crítico</option>
         </select>
         <textarea id="descripcion_corta" class="swal2-textarea" placeholder="Descripción (mínimo 20 caracteres)" required></textarea>
-        <input type="text" id="imagen" class="swal2-input" placeholder="URL de la imagen (ej: https://ejemplo.com/imagen.jpg)" required>
+        <input type="text" id="imagen" class="swal2-input" placeholder="URL de la imagen" required>
       `,
       focusConfirm: false,
       showCancelButton: true,
@@ -152,7 +131,6 @@ function Administrador() {
         const descripcion_corta = document.getElementById('descripcion_corta').value;
         const imagen = document.getElementById('imagen').value;
 
-        // Validaciones frontend
         if (!nombre_comun || !nombre_cientifico || !familia || !nivel_amenaza || !descripcion_corta || !imagen) {
           Swal.showValidationMessage('Todos los campos son obligatorios');
           return false;
@@ -201,25 +179,23 @@ function Administrador() {
             body: JSON.stringify(birdData)
           });
 
-          if (!createResponse.ok) {
-            const errorData = await createResponse.json();
-            throw new Error(errorData.message || 'Error al crear el ave');
-          }
-
+          const responseText = await createResponse.text();
+          console.log('Respuesta CREATE:', responseText);
+          
           await loadBirds();
           
           Swal.fire({
-            title: '¡Creado!',
-            text: `"${result.value.nombre_comun}" ha sido creado correctamente.`,
+            title: 'Éxito',
+            text: 'Ave creada correctamente',
             icon: 'success',
             confirmButtonColor: '#053f27ff',
             timer: 2000
           });
         } catch (error) {
-          console.error('Error creando ave:', error);
+          console.error('Error:', error);
           Swal.fire({
             title: 'Error',
-            text: error.message || 'No se pudo crear el ave. Intenta nuevamente.',
+            text: 'No se pudo crear el ave',
             icon: 'error',
             confirmButtonColor: '#053f27ff'
           });
@@ -242,7 +218,7 @@ function Administrador() {
           <option value="EN" ${bird.nivel_amenaza === 'EN' ? 'selected' : ''}>EN - En peligro</option>
           <option value="CR" ${bird.nivel_amenaza === 'CR' ? 'selected' : ''}>CR - En peligro crítico</option>
         </select>
-        <textarea id="descripcion_corta" class="swal2-textarea" placeholder="Descripción (mínimo 20 caracteres)">${bird.descripcion_corta}</textarea>
+        <textarea id="descripcion_corta" class="swal2-textarea" placeholder="Descripción">${bird.descripcion_corta}</textarea>
         <input type="text" id="imagen" class="swal2-input" placeholder="URL de la imagen" value="${bird.imagen || ''}">
       `,
       focusConfirm: false,
@@ -258,7 +234,6 @@ function Administrador() {
         const descripcion_corta = document.getElementById('descripcion_corta').value;
         const imagen = document.getElementById('imagen').value;
 
-        // Validaciones frontend
         if (!nombre_comun || !nombre_cientifico || !familia || !nivel_amenaza || !descripcion_corta || !imagen) {
           Swal.showValidationMessage('Todos los campos son obligatorios');
           return false;
@@ -307,25 +282,23 @@ function Administrador() {
             body: JSON.stringify(birdData)
           });
 
-          if (!updateResponse.ok) {
-            const errorData = await updateResponse.json();
-            throw new Error(errorData.message || 'Error al actualizar el ave');
-          }
-
+          const responseText = await updateResponse.text();
+          console.log('Respuesta UPDATE:', responseText);
+          
           await loadBirds();
           
           Swal.fire({
-            title: '¡Actualizado!',
-            text: `"${result.value.nombre_comun}" ha sido actualizado correctamente.`,
+            title: 'Éxito',
+            text: 'Ave actualizada correctamente',
             icon: 'success',
             confirmButtonColor: '#053f27ff',
             timer: 2000
           });
         } catch (error) {
-          console.error('Error actualizando ave:', error);
+          console.error('Error:', error);
           Swal.fire({
             title: 'Error',
-            text: error.message || 'No se pudo actualizar el ave. Intenta nuevamente.',
+            text: 'No se pudo actualizar el ave',
             icon: 'error',
             confirmButtonColor: '#053f27ff'
           });
@@ -350,16 +323,6 @@ function Administrador() {
     );
   }
 
-  if (birds.length === 0 && !loading) {
-    Swal.fire({
-      title: 'No se encontraron aves',
-      text: 'La base de datos está vacía. Puedes crear nuevas aves usando el botón "Nueva Ave".',
-      icon: 'info',
-      confirmButtonColor: '#053f27ff',
-      confirmButtonText: 'Entendido'
-    });
-  }
-
   return (
     <div className="administrador">
       <div className="page-header">
@@ -376,7 +339,7 @@ function Administrador() {
         </button>
       </div>
 
-      {birds.length > 0 && (
+      {birds.length > 0 ? (
         <>
           <div className="birds-grid-admin">
             {birds.map((bird) => (
@@ -465,6 +428,11 @@ function Administrador() {
             </div>
           </div>
         </>
+      ) : (
+        <div className="no-birds-message">
+          <h3>No hay aves en la base de datos</h3>
+          <p>Usa el botón "Nueva Ave" para agregar la primera ave.</p>
+        </div>
       )}
     </div>
   );
