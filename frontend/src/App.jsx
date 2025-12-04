@@ -11,27 +11,21 @@ import Favoritos from './components/Main/Favoritos/Favoritos.jsx';
 import Administrador from './components/Main/Administrador/Administrador.jsx';
 import './App.css';
 
-// Componente principal de la aplicación
 function App() {
-
-  // Estado para gestionar la autenticación y el rol del usuario
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // Estado para almacenar el rol del usuario (por defecto 'user')
   const [userRole, setUserRole] = useState('user');
+  const [token, setToken] = useState(''); // ← AGREGAR ESTADO PARA TOKEN
 
   // VERIFICAR AUTENTICACIÓN AL CARGAR LA APLICACIÓN
   useEffect(() => {
-    // Simulación de verificación de token (aquí se podría hacer una llamada real a una API)
-    const token = localStorage.getItem('authToken');
-    // Obtener el rol del usuario almacenado en localStorage
+    // Obtener token y rol del localStorage
+    const storedToken = localStorage.getItem('authToken');
     const role = localStorage.getItem('userRole');
     
-    // Si existe un token, el usuario está autenticado
-    if (token) {
-      // Actualizar el estado de autenticación y rol
+    if (storedToken) {
       setIsAuthenticated(true);
-      // Si no hay rol almacenado, se asume 'user' por defecto
       setUserRole(role || 'user');
+      setToken(storedToken); // ← GUARDAR EL TOKEN EN EL ESTADO
     }
   }, []);
 
@@ -39,35 +33,32 @@ function App() {
   const handleLogin = (token, role = 'user') => {
     // Almacenar el token y rol en localStorage
     localStorage.setItem('authToken', token);
-    // Almacenar el rol del usuario
     localStorage.setItem('userRole', role);
     
-    // Actualizar el estado de autenticación
+    // Actualizar estados
     setIsAuthenticated(true);
-    // Actualizar el rol del usuario
     setUserRole(role);
+    setToken(token); // ← GUARDAR TOKEN EN ESTADO
   };
 
   // FUNCIÓN PARA MANEJAR EL CIERRE DE SESIÓN
   const handleLogout = () => {
-    // Eliminar el token y rol del localStorage
+    // Eliminar datos del localStorage
     localStorage.removeItem('authToken');
-    // Eliminar el rol del usuario
     localStorage.removeItem('userRole');
     
-    // Actualizar el estado de autenticación y rol
+    // Actualizar estados
     setIsAuthenticated(false);
     setUserRole('user');
+    setToken(''); // ← LIMPIAR TOKEN DEL ESTADO
     
     // Redirigir al usuario a la página de inicio
     window.location.href = '/';
   };
 
-  // RENDERIZADO DE LA APLICACIÓN CON RUTAS
   return (
     <Router>
       <div className="app">
-
         {/* Cabecera con navegación */}
         <Header 
           isAuthenticated={isAuthenticated} 
@@ -84,7 +75,7 @@ function App() {
             <Route path="/navarrevisca" element={<AvesNavarrevisca />} />
             <Route path="/navarrevisca/detalle/:id" element={<DetalleAveNavarrevisca />} />
             
-            {/* Rutas protegidas: favoritos y administrador */}
+            {/* Rutas protegidas */}
             <Route 
               path="/favoritos" 
               element={
@@ -94,11 +85,16 @@ function App() {
               } 
             />
             
+            {/* RUTA ADMIN - PASAR TOKEN COMO PROP */}
             <Route 
               path="/admin" 
               element={
                 isAuthenticated && userRole === 'admin' ? 
-                  <Administrador /> : 
+                  <Administrador 
+                    isAuthenticated={isAuthenticated}
+                    userRole={userRole}
+                    token={localStorage.getItem('authToken')}
+                  /> : 
                   <Navigate to="/" />
               } 
             />
