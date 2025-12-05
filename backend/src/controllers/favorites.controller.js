@@ -1,5 +1,5 @@
 /* 
-🎮 FAVORITES CONTROLLER → favorites.controller.js
+🎮 FAVORITES CONTROLLER → favorites.controller.js - VERSIÓN CORREGIDA
     * Controlador para gestionar favoritos del usuario
     * Auth: userId obtenido del token JWT
 */
@@ -8,27 +8,24 @@ const favoritesModel = require('../models/favorites.model.js');
 const favoritesOperation = require('../utils/favorites.utils.js');
 
 // ========================================================================================================================================  
-// 1. GET MIS FAVORITOS
+// 1. GET MIS FAVORITOS - CORREGIDO
 // ========================================================================================================================================  
 
 async function getMyFavorites(req, res) {
   try {
-    // Obtiene userId del token decodificado
-      // Verifica que el token sea válido y contenga ID de usuario
-    if (!req.token || !req.token.id) {
+    // Obtiene userId del token decodificado - CORREGIDO: usar req.user
+    if (!req.user || !req.user.id_user) {
       return res.status(401).json({
         success: false,
         error: 'Autenticación requerida',
-        message: 'Token no válido o expirado'
+        message: 'Debes iniciar sesión para ver tus favoritos'
       });
     }
     
-    // Extrae información del usuario del token
-    const userId = req.token.id;
-    const userEmail = req.token.email;
-    const userRole = req.token.role;
-    
-    console.log(`Controller: GET /favoritos para usuario ${userId} (${userEmail}, ${userRole})`);
+    // Extrae información del usuario de req.user
+    const userId = req.user.id_user;
+    const userEmail = req.user.email;
+    const userRole = req.user.role;
     
     // Obtiene favoritos del usuario con detalles completos de las aves
     const favorites = await favoritesModel.getUserFavoritesWithDetails(userId);
@@ -50,8 +47,6 @@ async function getMyFavorites(req, res) {
     });
     
   } catch (error) {
-    console.error('Controller error en getMyFavorites:', error);
-    
     // Error 500: Error interno del servidor
     res.status(500).json({
       success: false,
@@ -62,7 +57,7 @@ async function getMyFavorites(req, res) {
 }
 
 // ========================================================================================================================================  
-// 2. ELIMINAR DE FAVORITOS
+// 2. ELIMINAR DE FAVORITOS - CORREGIDO
 // ========================================================================================================================================  
 
 async function removeFavorite(req, res) {
@@ -70,19 +65,17 @@ async function removeFavorite(req, res) {
     // Obtiene ID del favorito desde los parámetros de la URL
     const favoriteId = parseInt(req.params.id);
     
-    // Verifica token y obtiene userId
-    if (!req.token || !req.token.id) {
+    // Verifica token y obtiene userId - CORREGIDO: usar req.user
+    if (!req.user || !req.user.id_user) {
       return res.status(401).json({
         success: false,
         error: 'Autenticación requerida',
-        message: 'Token no válido o expirado'
+        message: 'Debes iniciar sesión para eliminar favoritos'
       });
     }
     
-    const userId = req.token.id;
-    const userEmail = req.token.email;
-    
-    console.log(`Controller: DELETE /favoritos/${favoriteId} para usuario ${userId} (${userEmail})`);
+    const userId = req.user.id_user;
+    const userEmail = req.user.email;
     
     // Elimina favorito a través del servicio
     const result = await favoritesModel.removeFavorite(favoriteId, userId);
@@ -111,8 +104,6 @@ async function removeFavorite(req, res) {
     });
     
   } catch (error) {
-    console.error(`Controller error en removeFavorite:`, error);
-    
     // Error 500: Error interno del servidor
     res.status(500).json({
       success: false,

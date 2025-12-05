@@ -70,12 +70,14 @@ class AuthService {
             
             const user = users[0];
             
-            // IMPORTANTE: Verificar que createToken funciona correctamente
-            // Esta función debe usar la misma JWT_SECRET que decodeToken
+            // El token debe contener id_user para que decodeToken.js funcione correctamente
             const token = createToken({ 
-                id: user.id_user,     
+                id_user: user.id_user,     
                 email: user.email, 
-                role: user.role 
+                role: user.role,
+                name: user.name || '',
+                surname: user.surname || '',
+                loginMethod: 'traditional'
             });
             
             // Debug: verificar que el token se generó
@@ -84,9 +86,11 @@ class AuthService {
             return {
                 success: true,
                 user: {
-                    id: user.id_user,
+                    id_user: user.id_user,  
                     email: user.email,
-                    role: user.role
+                    role: user.role,
+                    name: user.name || '',
+                    surname: user.surname || ''
                 },
                 token: token
             };

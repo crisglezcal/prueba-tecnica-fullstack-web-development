@@ -1,7 +1,5 @@
 /* 
-📑 NAVARREVISCA MODEL → navarrevisca.model.js
-    * Modelo para formatear datos de la tabla navarrevisca_birds
-    * TODOS los campos son requeridos (NOT NULL)
+🧰 NAVARREVISCA UTILS → navarrevisca.utils.js
 */
 
 // =============================================================================================================================
