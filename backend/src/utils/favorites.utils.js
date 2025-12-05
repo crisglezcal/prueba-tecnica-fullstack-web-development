@@ -1,6 +1,5 @@
 /* 
-📑 FAVORITES MODEL → favorites.model.js
-    * Modelo para formatear datos de favoritos
+🧰 FAVORITES UTILS → favorites.utils.js
 */
 
 // ======================================================================================================================================

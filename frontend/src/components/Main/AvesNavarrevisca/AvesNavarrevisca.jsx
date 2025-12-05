@@ -6,18 +6,18 @@ import './AvesNavarrevisca.css';
 
 // Componente para mostrar la lista de aves de Navarrevisca
 function AvesNavarrevisca() {
-  const [birds, setBirds] = useState([]);
-  const [filteredBirds, setFilteredBirds] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [threatFilter, setThreatFilter] = useState('todos');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [birds, setBirds] = useState([]); // Estado 1 para almacenar todas las aves
+  const [filteredBirds, setFilteredBirds] = useState([]); // Estado 2 para aves filtradas
+  const [loading, setLoading] = useState(true); // Estado 3 para controlar el loading
+  const [searchTerm, setSearchTerm] = useState(''); // Estado 4 para el término de búsqueda
+  const [threatFilter, setThreatFilter] = useState('todos'); // Estado 5 para el filtro de amenaza
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado 6 para autenticación
 
   // Verificar autenticación al cargar
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    const userRole = localStorage.getItem('userRole');
-    setIsAuthenticated(!!token && (userRole === 'user' || userRole === 'admin'));
+    const token = localStorage.getItem('authToken'); // Suponiendo que el token se guarda en localStorage
+    const userRole = localStorage.getItem('userRole'); // Rol del usuario
+    setIsAuthenticated(!!token && (userRole === 'user' || userRole === 'admin')); // Solo usuarios autenticados
   }, []);
 
   // Función para mostrar mensajes con SweetAlert
@@ -49,7 +49,7 @@ function AvesNavarrevisca() {
     if (threatFilter !== 'todos') {
       filtered = filtered.filter(bird => bird.nivel_amenaza === threatFilter);
     }
-
+    // Actualizar el estado de aves filtradas
     setFilteredBirds(filtered);
   }, [searchTerm, threatFilter, birds]);
 
@@ -117,12 +117,12 @@ function AvesNavarrevisca() {
     fetchBirds();
   }, []);
 
-  // Función para crear nueva ave (solo usuarios autenticados)
+    // Función para crear nueva ave (solo usuarios autenticados)
   const handleCreate = () => {
     if (!isAuthenticated) {
       Swal.fire({
         title: 'Acceso restringido',
-        text: 'Debes iniciar sesión para crear nuevas aves.',
+        text: 'Debes iniciar sesión para crear nuevas aves',
         icon: 'warning',
         confirmButtonColor: '#053f27ff'
       }).then(() => {
@@ -131,6 +131,7 @@ function AvesNavarrevisca() {
       return;
     }
 
+    // Mostrar formulario de creación con SweetAlert
     Swal.fire({
       title: 'Nueva ave',
       html: `
@@ -171,8 +172,8 @@ function AvesNavarrevisca() {
           return false;
         }
 
-        if (!imagen.startsWith('http')) {
-          Swal.showValidationMessage('Debe proporcionar una URL válida para la imagen');
+        if (!imagen.startsWith('http://') && !imagen.startsWith('https://')) {
+          Swal.showValidationMessage('La URL debe comenzar con http:// o https://');
           return false;
         }
 
@@ -190,10 +191,11 @@ function AvesNavarrevisca() {
         try {
           const token = localStorage.getItem('authToken');
           
+          // Estructura de datos según tu backend
           const birdData = {
             common_name: result.value.nombre_comun,
             scientific_name: result.value.nombre_cientifico,
-            order: "Passeriformes",
+            order: "Passeriformes", // Campo obligatorio en tu validación
             family: result.value.familia,
             threat_level: result.value.nivel_amenaza,
             description: result.value.descripcion_corta,
@@ -202,14 +204,15 @@ function AvesNavarrevisca() {
 
           Swal.fire({
             title: 'Creando...',
-            text: 'Por favor espera',
+            text: 'Por favor, espera',
             allowOutsideClick: false,
             didOpen: () => {
               Swal.showLoading();
             }
           });
 
-          const response = await fetch('http://localhost:3001/admin/aves', {
+          // Llamada a la API para crear la nueva ave
+          const response = await fetch('http://localhost:3001/aves/navarrevisca', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -247,15 +250,18 @@ function AvesNavarrevisca() {
               timer: 2000
             });
           } else {
-            throw new Error('Error al crear el ave');
+            // Mejor manejo de errores
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
           }
         } catch (error) {
           Swal.fire({
             title: 'Error',
-            text: 'No se pudo crear el ave. Asegúrate de tener permisos de administrador.',
+            text: `No se pudo crear el ave: ${error.message}`,
             icon: 'error',
             confirmButtonColor: '#053f27ff'
           });
+          console.error('Error creando ave:', error);
         }
       }
     });
@@ -364,7 +370,7 @@ function AvesNavarrevisca() {
       ) : birds.length === 0 ? (
         <div className="no-birds-message">
           <h3>No hay aves en la base de datos</h3>
-          <p>{isAuthenticated ? 'Usa el botón "Nueva Ave" para agregar la primera ave.' : 'Contacta con un administrador para agregar aves.'}</p>
+          <p>{isAuthenticated ? 'Usa el botón "Nueva ave" para agregar la primera ave' : 'Contacta con un administrador para agregar aves'}</p>
         </div>
       ) : (
         <article className="birds-grid">
