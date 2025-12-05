@@ -1,380 +1,340 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2'; 
 import './Login.css';
 
+// Componente Login que recibe la función onLogin como prop desde el componente padre (App.js)
 function Login({ onLogin }) {
+  // Estado 1 para controlar si estamos en modo login (true) o registro (false)
   const [isLogin, setIsLogin] = useState(true);
+  
+  // Estado para almacenar los datos del formulario
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-    surname: ''
+    email: '',      // Email del usuario
+    password: '',   // Contraseña del usuario
+    name: '',       // Nombre (solo para registro)
+    surname: ''     // Apellido (solo para registro)
   });
+  
+  // Estado 2 para controlar cuando se está procesando una solicitud (login o registro)
   const [loading, setLoading] = useState(false);
+  
+  // Estado 3 para almacenar mensajes de error
   const [error, setError] = useState('');
-  const [googleLoading, setGoogleLoading] = useState(false);
+  
+  // Hook de React Router para navegar entre páginas
   const navigate = useNavigate();
 
-  // Verificar si hay token de Google en la URL (para el callback)
+  // Función auxiliar para mostrar alertas de error con SweetAlert
+  const showError = (title, message) => {
+    Swal.fire({
+      icon: 'error',           
+      title: title,           
+      text: message,          
+      confirmButtonColor: 'rgba(172, 123, 25, 1)', 
+      confirmButtonText: 'Entendido' 
+    });
+  };
+
+  // Función auxiliar para mostrar alertas de éxito con SweetAlert
+  const showSuccess = (title, message) => {
+    Swal.fire({
+      icon: 'success',           
+      title: title,            
+      text: message,           
+      confirmButtonColor: '#053f27ff', 
+      confirmButtonText: '¡Genial!'  
+    });
+  };
+
+  // useEffect se ejecuta cuando el componente se monta y cuando cambian onLogin o navigate
   useEffect(() => {
-    console.log('🔍 Verificando parámetros de URL...');
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    const errorParam = urlParams.get('error');
-
-    console.log('📋 Parámetros encontrados:', { token, errorParam });
-
-    if (errorParam) {
-      const errorMessage = `Error de Google: ${decodeURIComponent(errorParam)}`;
-      console.error('❌ Error de Google:', errorMessage);
-      setError(errorMessage);
-      alert(errorMessage);
-      
-      // Limpiar URL después de mostrar el error
-      window.history.replaceState({}, document.title, '/login');
-    }
-
-    if (token) {
-      console.log('✅ Token de Google recibido en URL');
-      handleGoogleCallback(token);
-    }
-  }, []);
-
-  const handleGoogleCallback = async (token) => {
-    try {
-      console.log('🔄 Procesando callback de Google...');
-      console.log('🔑 Token recibido:', token.substring(0, 50) + '...');
-      
-      // Guardar token en localStorage
-      localStorage.setItem('token', token);
-      console.log('💾 Token guardado en localStorage');
-      
-      // Decodificar el token para ver su contenido (sin verificar)
+    // Función interna para procesar el token de Google recibido en la URL
+    const processGoogleCallback = async (token) => {
       try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const decoded = JSON.parse(atob(base64));
-        console.log('📋 Token decodificado:', decoded);
-      } catch (e) {
-        console.log('⚠️ No se pudo decodificar token:', e.message);
-      }
-      
-      // Obtener información del usuario desde el backend
-      console.log('📡 Llamando a /api/auth/me con token...');
-      const response = await fetch('http://localhost:3001/api/auth/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        credentials: 'include'
-      });
-
-      console.log('📥 Respuesta de /me:', {
-        status: response.status,
-        ok: response.ok
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        console.log('👤 Datos de usuario recibidos:', userData);
+        // Guardar el token en localStorage para mantener la sesión
+        localStorage.setItem('token', token);
         
-        // IMPORTANTE: Tu backend devuelve id_user, NO id o userId
-        const userId = userData.id_user || userData.id || userData.userId;
-        const userRole = userData.role || 'user';
-        
-        if (!userId) {
-          throw new Error('No se recibió ID de usuario');
+        // Hacer una solicitud al backend para obtener los datos del usuario
+        const response = await fetch('http://localhost:3001/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` } 
+        });
+
+        // Si la respuesta es exitosa (status 200-299)
+        if (response.ok) {
+          // Convertir respuesta a JSON
+          const userData = await response.json();
+          
+          // Extraer datos del usuario
+          const userId = userData.id_user;      
+          const userRole = userData.role || 'user'; // Rol del usuario (por defecto "user")
+          
+          // Validar que recibimos un ID de usuario
+          if (!userId) throw new Error('No se recibió ID de usuario');
+          
+          // Llamar a la función onLogin del padre para actualizar el estado global
+          onLogin(token, userRole, userId);
+          
+          // Limpiar la URL para quitar el token (por seguridad y estética)
+          window.history.replaceState({}, document.title, '/');
+          
+          // Mostrar mensaje de éxito
+          showSuccess('¡Bienvenid@!', 'Has iniciado sesión en tu perfil');
+          
+          // Redirigir a la página principal
+          navigate('/');
+        } else {
+          // Si la respuesta del servidor no es exitosa
+          throw new Error(`Error del servidor: ${response.status}`);
         }
-        
-        console.log('✅ Usuario autenticado:', { userId, role: userRole });
-        
-        // Llamar al callback de login
-        onLogin(token, userRole, userId);
-        
-        // Limpiar URL después del login exitoso
-        window.history.replaceState({}, document.title, '/');
-        
-        // Navegar a la página principal
-        navigate('/');
-      } else {
-        const errorText = await response.text();
-        console.error('❌ Error en respuesta de /me:', errorText);
-        throw new Error(`Error del servidor: ${response.status}`);
+      } catch (error) {
+        // Manejar cualquier error durante el proceso
+        setError(error.message); // Guardar error en estado
+        showError('Error en autenticación', error.message); // Mostrar alerta
+        window.history.replaceState({}, document.title, '/login'); // Limpiar URL
       }
-    } catch (error) {
-      console.error('❌ Error en callback de Google:', error);
-      setError(error.message);
-      alert(`Error en autenticación: ${error.message}`);
-      
-      // Limpiar URL en caso de error
-      window.history.replaceState({}, document.title, '/login');
+    };
+
+    // Leer los parámetros de la URL (ej: /login?token=abc123 o /login?error=message)
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');      // Token de autenticación de Google
+    const errorParam = urlParams.get('error'); // Error de autenticación de Google
+
+    // Si hay un error en los parámetros (Google auth falló)
+    if (errorParam) {
+      const errorMsg = `Error de Google: ${decodeURIComponent(errorParam)}`;
+      setError(errorMsg); // Guardar error en estado
+      showError('Error de Google', errorMsg); // Mostrar alerta
+      window.history.replaceState({}, document.title, '/login'); // Limpiar URL
     }
-  };
 
+    // Si hay un token en los parámetros (Google auth exitosa)
+    if (token) {
+      processGoogleCallback(token); // Procesar el token
+    }
+  }, [onLogin, navigate]); // Dependencias: se ejecuta cuando onLogin o navigate cambian
+
+  // Función para iniciar el login con Google
   const handleGoogleLogin = () => {
-    setGoogleLoading(true);
-    setError('');
-    
-    // IMPORTANTE: La URL debe coincidir con tu backend
-    const googleAuthUrl = 'http://localhost:3001/api/auth/google';
-    console.log('🌐 Redirigiendo a Google OAuth:', googleAuthUrl);
-    
-    // Redirigir a la página de autenticación de Google
-    window.location.href = googleAuthUrl;
+    // Redirigir al usuario al endpoint de Google OAuth en el backend
+    window.location.href = 'http://localhost:3001/api/auth/google';
   };
 
+  // Función para manejar el envío del formulario (login o registro normal)
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+    e.preventDefault(); 
+    setLoading(true);   
+    setError('');       
     
-    // Preparar endpoint y payload
+    // Determinar endpoint y payload según el modo (login o registro)
     const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
     const payload = isLogin 
       ? { 
           email: formData.email, 
           password: formData.password 
-        }
+        } // Para login: solo email y password
       : { 
           email: formData.email, 
           password: formData.password,
-          role: 'user',
-          name: formData.name || '',
-          surname: formData.surname || ''
-        };
-    
-    console.log('🔄 Enviando a backend:', { endpoint, payload });
+          role: 'user', // Nuevos usuarios siempre son 'user' (no admin)
+          name: formData.name,
+          surname: formData.surname 
+        }; // Para registro: todos los campos
     
     try {
+      // Enviar solicitud al backend
       const response = await fetch(`http://localhost:3001${endpoint}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-        credentials: 'include'
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
       
+      // Convertir respuesta a JSON
       const data = await response.json();
-      console.log('📥 Respuesta del backend:', data);
       
+      // Si la respuesta no es exitosa (status 400-599)
       if (!response.ok) {
         throw new Error(data.msg || data.message || `Error ${response.status}`);
       }
       
+      // Si es login exitoso
       if (isLogin) {
-        // Login exitoso
-        console.log('✅ Login exitoso:', data);
-        
-        // Obtener token de headers o respuesta
-        const token = data.token || 
-                     response.headers.get('Authorization')?.replace('Bearer ', '') ||
-                     data.access_token;
-        
+        const token = data.token; // Token JWT del backend
         if (token) {
-          localStorage.setItem('token', token);
+          localStorage.setItem('token', token); // Guardar token en localStorage
+          const userId = data.id_user;         // ID del usuario
+          const userRole = data.role || 'user'; // Rol del usuario
           
-          // IMPORTANTE: Tu backend devuelve id_user, NO id
-          const userId = data.id_user || data.id || data.userId;
-          const userRole = data.role || 'user';
+          // Actualizar estado global de la aplicación
+          onLogin(token, userRole, userId);
           
-          if (!userId) {
-            console.warn('⚠️ No se recibió ID de usuario, usando email como fallback');
-          }
+          // Mostrar mensaje de éxito
+          showSuccess('¡Bienvenido!', 'Inicio de sesión exitoso');
           
-          onLogin(token, userRole, userId || formData.email);
+          // Redirigir a página principal
           navigate('/');
         } else {
-          throw new Error('No se recibió token de autenticación');
+          throw new Error('No se recibió token');
         }
-        
       } else {
-        // Registro exitoso
-        console.log('✅ Registro exitoso:', data);
-        alert('¡Cuenta creada exitosamente! Ahora puedes iniciar sesión');
+        // Si es registro exitoso
+        showSuccess('¡Cuenta creada!', 'Tu cuenta ha sido creada exitosamente. Ahora puedes iniciar sesión.');
         
         // Cambiar a modo login
         setIsLogin(true);
-        setFormData({
-          email: formData.email,
-          password: '',
-          name: '',
-          surname: ''
+        
+        // Limpiar formulario (mantener email, limpiar los demás campos)
+        setFormData({ 
+          email: formData.email, 
+          password: '', 
+          name: '', 
+          surname: '' 
         });
       }
       
     } catch (error) {
-      console.error('❌ Error:', error.message);
-      setError(error.message || 'Error en la conexión');
-      alert(error.message || 'Error en la conexión');
+      // Manejar errores de la solicitud
+      setError(error.message); // Guardar error en estado
+      showError('Error', error.message); // Mostrar alerta
     } finally {
-      setLoading(false);
+      setLoading(false); // Desactivar estado de carga (se ejecuta siempre)
     }
   };
 
+  // Función para manejar cambios en los inputs del formulario
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+    // Actualizar solo el campo que cambió
+    setFormData({ 
+      ...formData,          // Mantener los otros campos
+      [e.target.name]: e.target.value // Actualizar el campo modificado
     });
-    setError('');
+    setError(''); // Limpiar errores al escribir
   };
 
+  // Función para alternar entre modo login y registro
+  const toggleMode = () => {
+    setIsLogin(!isLogin); // Cambiar el modo
+    setError(''); // Limpiar errores
+    
+    // Limpiar formulario (mantener email si ya estaba escrito)
+    setFormData({ 
+      email: formData.email, 
+      password: '', 
+      name: '', 
+      surname: '' 
+    });
+  };
+
+  // Renderizado del componente
   return (
-    <div className="login-container">
-      <div className="login-card">
+    <section className="login-container">
+      <article className="login-card">
+        {/* Título que cambia según el modo */}
         <h2>{isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}</h2>
         
-        {error && (
-          <div className="error-message">
-            ❌ {error}
-          </div>
-        )}
+        {/* Mostrar error si existe */}
+        {error && <div className="error-message">❌ {error}</div>}
         
-        {/* Botón de Google */}
+        {/* Sección de login con Google */}
         <div className="google-login-section">
-          <button
-            type="button"
-            className="btn-google"
+          <button 
+            type="button" 
+            className="btn-google" 
             onClick={handleGoogleLogin}
-            disabled={googleLoading}
           >
-            {googleLoading ? (
-              <>
-                <span className="spinner"></span> Conectando con Google...
-              </>
-            ) : (
-              <>
-                <svg className="google-icon" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                Continuar con Google
-              </>
-            )}
+            Continuar con Google
           </button>
           
+          {/* Separador visual */}
           <div className="separator">
             <span>o</span>
           </div>
         </div>
         
+        {/* Formulario principal */}
         <form onSubmit={handleSubmit}>
+          {/* Campos de nombre y apellido solo en modo registro */}
           {!isLogin && (
             <>
               <div className="form-group">
-                <label htmlFor="name">Nombre</label>
                 <input
                   type="text"
-                  id="name"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  required={!isLogin}
-                  placeholder="Tu nombre"
+                  required={!isLogin} // Requerido solo en registro
+                  placeholder="Nombre"
                 />
               </div>
               
               <div className="form-group">
-                <label htmlFor="surname">Apellido</label>
                 <input
                   type="text"
-                  id="surname"
                   name="surname"
                   value={formData.surname}
                   onChange={handleChange}
-                  required={!isLogin}
-                  placeholder="Tu apellido"
+                  required={!isLogin} // Requerido solo en registro
+                  placeholder="Apellido"
                 />
               </div>
             </>
           )}
           
+          {/* Campo email (siempre visible) */}
           <div className="form-group">
-            <label htmlFor="email">Email</label>
             <input
               type="email"
-              id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              required
-              placeholder="tu@email.com"
+              required // Siempre requerido
+              placeholder="Email"
             />
           </div>
           
+          {/* Campo contraseña (siempre visible) */}
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
             <input
               type="password"
-              id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              required
-              placeholder="••••••••"
-              minLength="6"
+              required // Siempre requerido
+              placeholder="Contraseña"
+              minLength="6" // Mínimo 6 caracteres
             />
-            {!isLogin && (
-              <small className="form-text">Mínimo 6 caracteres</small>
-            )}
           </div>
           
+          {/* Botón de envío del formulario */}
           <button 
             type="submit" 
             className="btn btn-primary" 
+            // Deshabilitar si está cargando o faltan campos obligatorios
             disabled={loading || !formData.email || !formData.password}
           >
-            {loading ? (
-              <>
-                <span className="spinner"></span> Procesando...
-              </>
-            ) : isLogin ? 'Iniciar Sesión' : 'Registrarse'}
+            {/* Texto del botón cambia según estado */}
+            {loading ? 'Procesando...' : isLogin ? 'Iniciar sesión' : 'Registrarse'}
           </button>
         </form>
         
+        {/* Pie de página para alternar entre login y registro */}
         <div className="login-footer">
           <p>
+            {/* Mensaje que cambia según el modo */}
             {isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
             <button 
               type="button" 
-              className="switch-btn"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError('');
-                setFormData({
-                  email: formData.email,
-                  password: '',
-                  name: '',
-                  surname: ''
-                });
-              }}
+              className="switch-btn" 
+              onClick={toggleMode}
             >
+              {/* Texto del botón cambia según el modo */}
               {isLogin ? ' Regístrate' : ' Inicia sesión'}
             </button>
           </p>
         </div>
-        
-        <div className="debug-info">
-          <small>
-            <strong>Debug:</strong> Backend en{' '}
-            <a href="http://localhost:3001/api/status" target="_blank" rel="noreferrer">
-              http://localhost:3001
-            </a>
-            {' | '}
-            <a href="http://localhost:3001/api/auth/debug" target="_blank" rel="noreferrer">
-              Auth Debug
-            </a>
-            {' | '}
-            <a href="http://localhost:3001/api/auth/test-redirect" target="_blank" rel="noreferrer">
-              Test Redirect
-            </a>
-          </small>
-        </div>
-      </div>
-    </div>
+      </article>
+    </section>
   );
 }
 
-export default Login;
+export default Login; // Exportar el componente para uso en otras partes de la aplicación

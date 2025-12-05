@@ -54,10 +54,10 @@ app.use(express.json()); // Parsear JSON en el cuerpo de las peticiones
 // Importar configuración de Passport - Asegúrate de que este archivo existe
 try {
   require('./config/passport');
-  console.log('Configuración de Passport cargada correctamente');
+  // console.log('Configuración de Passport cargada correctamente');
 } catch (error) {
-  console.error('Error cargando configuración de Passport:', error.message);
-  console.log('Creando archivo básico de configuración...');
+  // console.error('Error cargando configuración de Passport:', error.message);
+  // console.log('Creando archivo básico de configuración...');
   
   // Configuración básica temporal si no existe el archivo
   const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -68,7 +68,7 @@ try {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_CALLBACK_URL
     }, (accessToken, refreshToken, profile, done) => {
-      console.log('🔑 Perfil de Google:', profile.emails[0].value);
+      // console.log('🔑 Perfil de Google:', profile.emails[0].value);
       return done(null, { 
         id: profile.id, 
         email: profile.emails[0].value,
@@ -121,7 +121,7 @@ app.get('/api/session-debug', (req, res) => {
 // =============================================================================================================================
 
 app.use((req, res) => {
-    console.log(`Ruta no encontrada: ${req.method} ${req.path}`);
+    // console.log(`Ruta no encontrada: ${req.method} ${req.path}`);
     res.status(404).json({ 
         error: 'Ruta no encontrada',
         path: req.path,
@@ -134,7 +134,7 @@ app.use((req, res) => {
 // =============================================================================================================================
 
 app.use((err, req, res, next) => {
-    console.error('Error del servidor:', err);
+    // console.error('Error del servidor:', err);
     res.status(500).json({ 
         error: 'Error interno del servidor',
         message: process.env.NODE_ENV === 'development' ? err.message : 'Contacta al administrador'
@@ -148,27 +148,27 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3001; // Puerto desde .env o 3001 por defecto
 
 app.listen(PORT, () => {
-  console.log(`Servidor funcionando en http://localhost:${PORT}`);
-  console.log(`Frontend: http://localhost:5173`);
-  console.log(`Google OAuth configurado: ${process.env.GOOGLE_CLIENT_ID ? 'SÍ' : 'NO'}`);
+  // console.log(`Servidor funcionando en http://localhost:${PORT}`);
+  // console.log(`Frontend: http://localhost:5173`);
+  // console.log(`Google OAuth configurado: ${process.env.GOOGLE_CLIENT_ID ? 'SÍ' : 'NO'}`);
   
   if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    console.log(`Google OAuth configurado para: ${process.env.GOOGLE_CALLBACK_URL}`);
-    console.log(`Client ID: ${process.env.GOOGLE_CLIENT_ID.substring(0, 20)}...`);
+    // console.log(`Google OAuth configurado para: ${process.env.GOOGLE_CALLBACK_URL}`);
+    // console.log(`Client ID: ${process.env.GOOGLE_CLIENT_ID.substring(0, 20)}...`);
   } else {
-    console.warn(`Google OAuth NO configurado - añade credenciales en .env`);
-    console.warn(`Necesitas: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL`);
+    // console.warn(`Google OAuth NO configurado - añade credenciales en .env`);
+    // console.warn(`Necesitas: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_CALLBACK_URL`);
   }
   
-  console.log(`Session Secret: ${process.env.SESSION_SECRET ? 'Configurado' : 'NO configurado'}`);
-  console.log(`JWT Secret: ${process.env.JWT_SECRET ? 'Configurado' : 'NO configurado'}`);
+  // console.log(`Session Secret: ${process.env.SESSION_SECRET ? 'Configurado' : 'NO configurado'}`);
+  // console.log(`JWT Secret: ${process.env.JWT_SECRET ? 'Configurado' : 'NO configurado'}`);
   
   // Mostrar rutas disponibles
-  console.log('\n📋 Rutas disponibles:');
-  console.log('   GET  /api/auth/google              - Iniciar Google OAuth');
-  console.log('   GET  /api/auth/google/callback     - Callback Google OAuth');
-  console.log('   POST /api/auth/signup              - Registro');
-  console.log('   POST /api/auth/login               - Login tradicional');
-  console.log('   GET  /api/auth/debug               - Debug auth');
-  console.log('   GET  /api/session-debug            - Debug sesión');
+  // console.log('\n📋 Rutas disponibles:');
+  // console.log('   GET  /api/auth/google              - Iniciar Google OAuth');
+  // console.log('   GET  /api/auth/google/callback     - Callback Google OAuth');
+  // console.log('   POST /api/auth/signup              - Registro');
+  // console.log('   POST /api/auth/login               - Login tradicional');
+  // console.log('   GET  /api/auth/debug               - Debug auth');
+  // console.log('   GET  /api/session-debug            - Debug sesión');
 });
