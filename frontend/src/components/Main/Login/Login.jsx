@@ -5,6 +5,7 @@ import './Login.css';
 
 // Componente Login que recibe la función onLogin como prop desde el componente padre (App.js)
 function Login({ onLogin }) {
+  
   // Estado 1 para controlar si estamos en modo login (true) o registro (false)
   const [isLogin, setIsLogin] = useState(true);
   
@@ -178,7 +179,7 @@ function Login({ onLogin }) {
         }
       } else {
         // Si es registro exitoso
-        showSuccess('¡Cuenta creada!', 'Tu cuenta ha sido creada exitosamente. Ahora puedes iniciar sesión.');
+        showSuccess('¡Cuenta creada!', 'Ahora puedes iniciar sesión');
         
         // Cambiar a modo login
         setIsLogin(true);
@@ -230,7 +231,7 @@ function Login({ onLogin }) {
     <section className="login-container">
       <article className="login-card">
         {/* Título que cambia según el modo */}
-        <h2>{isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}</h2>
+        <h2>{isLogin ? 'Iniciar sesión' : 'Crear cuenta'}</h2>
         
         {/* Mostrar error si existe */}
         {error && <div className="error-message">❌ {error}</div>}
@@ -280,28 +281,44 @@ function Login({ onLogin }) {
             </>
           )}
           
-          {/* Campo email (siempre visible) */}
+          {/* Campo email con Regex (siempre visible) */}
           <div className="form-group">
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              required // Siempre requerido
+              required
               placeholder="Email"
+              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+              title="Por favor, ingresa un email válido. Ejemplo: usuario@dominio.com"
+              onInvalid={(e) => {
+                e.target.setCustomValidity('Ingresa un email válido como: nombre@ejemplo.com');
+              }}
+              onInput={(e) => {
+                e.target.setCustomValidity('');
+              }}
             />
           </div>
           
-          {/* Campo contraseña (siempre visible) */}
+          {/* Campo contraseña con Regex (siempre visible) */}
           <div className="form-group">
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              required // Siempre requerido
+              required
               placeholder="Contraseña"
-              minLength="6" // Mínimo 6 caracteres
+              minLength="6"
+              pattern="^(?=.*[A-Za-zÑñ])(?=.*\d)(?=.*[^\s\w]).{6,}$"
+              title="Mínimo 6 caracteres: debe incluir letra (puede ser ñ), número y algún símbolo especial"
+              onInvalid={(e) => {
+                e.target.setCustomValidity('Debe tener 6+ caracteres con al menos: 1 letra, 1 número, 1 símbolo (ej: @#$_!*)');
+              }}
+              onInput={(e) => {
+                e.target.setCustomValidity('');
+              }}
             />
           </div>
           
