@@ -1,7 +1,5 @@
 /* 
-📑 NAVARREVISCA-DETAIL MODEL → navarreviscaDetail.model.js
-    * Modelo para vista detalle y favoritos
-    * Variables y funciones en inglés, comentarios en castellano
+🧰 NAVARREVISCA-DETAIL UTILS → navarreviscaDetail.utils.js
 */
 
 // ======================================================================================================================================

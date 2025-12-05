@@ -1,6 +1,5 @@
 /* 
-📑 ADMIN MODEL → admin.model.js
-    * Modelo para formatear datos de operaciones de administrador
+🧰 ADMIN UTILS → admin.utils.js
 */
 
 // ======================================================================================================================================
