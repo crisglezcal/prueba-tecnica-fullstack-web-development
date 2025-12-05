@@ -3,20 +3,26 @@ import Swal from 'sweetalert2';
 import { ThreeDots } from 'react-loader-spinner';
 import './Administrador.css';
 
+// Componente principal del panel de administrador
 function Administrador() {
-  const [birds, setBirds] = useState([]);
-  const [filteredBirds, setFilteredBirds] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [birds, setBirds] = useState([]); // Estado 1 lista completa de aves
+  const [filteredBirds, setFilteredBirds] = useState([]); // Estado 2 lista filtrada según búsqueda
+  const [searchTerm, setSearchTerm] = useState(''); // Estado 3 término de búsqueda
+  const [loading, setLoading] = useState(true); // Estado 4 estado de carga
 
+  // Cargar aves al montar el componente
   useEffect(() => {
     loadBirds();
   }, []);
 
+  // Filtrar aves cuando cambia el término de búsqueda
   useEffect(() => {
-    // Filtrar aves cuando cambia el término de búsqueda
+    
+    // Si el término de búsqueda está vacío, mostrar todas las aves
     if (searchTerm.trim() === '') {
       setFilteredBirds(birds);
+    
+      // Filtrar aves por nombre común, científico o familia
     } else {
       const filtered = birds.filter(bird =>
         bird.nombre_comun.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -27,10 +33,10 @@ function Administrador() {
     }
   }, [searchTerm, birds]);
 
+  // Función para cargar aves desde el backend
   const loadBirds = async () => {
     try {
       const response = await fetch('http://localhost:3001/aves/navarrevisca');
-      
       if (!response.ok) {
         throw new Error('Error al cargar las aves');
       }
@@ -38,6 +44,7 @@ function Administrador() {
       const result = await response.json();
       const avesArray = result.data || [];
 
+      // Mapear datos recibidos al formato esperado
       const mappedBirds = avesArray.map(bird => ({
         id: bird.id,
         nombre_comun: bird.nombre_comun,
@@ -48,9 +55,11 @@ function Administrador() {
         imagen: bird.imagen
       }));
 
+      // Actualizar estados con las aves cargadas
       setBirds(mappedBirds);
       setFilteredBirds(mappedBirds);
       
+      // Manejo de errores
     } catch (error) {
       Swal.fire({
         title: 'Error',
@@ -65,14 +74,15 @@ function Administrador() {
     }
   };
 
+  // Función para manejar la eliminación de un ave
   const handleDelete = async (birdId, birdName) => {
     const result = await Swal.fire({
       title: '¿Eliminar ave?',
       text: `¿Estás seguro de eliminar "${birdName}"?`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
+      confirmButtonColor: 'rgba(172, 123, 25, 1)',
+      cancelButtonColor: '#053f27ff',
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     });
@@ -110,6 +120,7 @@ function Administrador() {
     }
   };
 
+  // Función para manejar la creación de un nuevo ave
   const handleCreate = () => {
     Swal.fire({
       title: 'Nueva ave',
@@ -165,6 +176,8 @@ function Administrador() {
           imagen
         };
       }
+
+    // Manejar la confirmación de creación
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -210,6 +223,7 @@ function Administrador() {
     });
   };
 
+  // Función para manejar la edición de un ave existente
   const handleEdit = (bird) => {
     Swal.fire({
       title: 'Editar ave',
@@ -328,18 +342,20 @@ function Administrador() {
   return (
     <div className="administrador">
       <div className="page-header">
-        <h1>⚙️ Panel de Administrador</h1>
-        <p className="subtitle">Gestión completa de la base de datos de aves</p>
+        <h1>Panel de administración</h1>
+        <p className="subtitle">Gestión completa de las aves en la base de datos</p>
       </div>
 
+      {/* Botón "Nueva ave" */}
       <div className="admin-actions">
         <button 
           className="btn btn-primary"
           onClick={handleCreate}
         >
-          + Nueva Ave
+          + Nueva ave
         </button>
         
+        {/* Contenedor de búsqueda */}
         <div className="search-container">
           <input
             type="text"
@@ -360,6 +376,7 @@ function Administrador() {
         </div>
       </div>
 
+      {/* Resultados de búsqueda y lista de aves */}  
       {filteredBirds.length > 0 ? (
         <>
           <div className="search-results-info">
@@ -371,6 +388,7 @@ function Administrador() {
             </p>
           </div>
 
+          {/* Contenedor de búsqueda */}    
           <div className="birds-grid-admin">
             {filteredBirds.map((bird) => (
               <div key={bird.id} className="bird-card-admin">
@@ -398,6 +416,7 @@ function Administrador() {
                   )}
                 </div>
                 
+                {/* Información del ave buscada */}
                 <div className="bird-info">
                   <h3>{bird.nombre_comun}</h3>
                   <p className="scientific-name">
@@ -446,7 +465,7 @@ function Administrador() {
       ) : (
         <div className="no-birds-message">
           <h3>No hay aves en la base de datos</h3>
-          <p>Usa el botón "Nueva Ave" para agregar la primera ave.</p>
+          <p>Usa el botón "Nueva ave" para agregar la primera ave</p>
         </div>
       )}
     </div>
