@@ -289,15 +289,8 @@ function AvesGredos() {
   // Renderizar estado de actualización manual (refreshing)
   if (refreshing) {
     return (
-      <div className="aves-gredos">
-        <div className="page-header">
-          <h1>Sierra de Gredos</h1>
-          <p className="subtitle">Observaciones en tiempo real - eBird</p>
-        </div>
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Actualizando observaciones de la Sierra de Gredos...</p>
-        </div>
+      <div className="page-header">
+        <h1>Sierra de Gredos</h1>
       </div>
     );
   }
@@ -305,16 +298,10 @@ function AvesGredos() {
   // Renderizar estado de carga inicial (loading)
   if (loading) {
     return (
-      <div className="aves-gredos">
-        <div className="page-header">
-          <h1>Sierra de Gredos</h1>
-          <p className="subtitle">Observaciones en tiempo real - Datos de eBird</p>
-        </div>
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Cargando observaciones de la Sierra de Gredos...</p>
-        </div>
+      <div className="page-header">
+        <h1>Sierra de Gredos</h1>
       </div>
+
     );
   }
 
@@ -324,7 +311,6 @@ function AvesGredos() {
       <div className="aves-gredos">
         <div className="page-header">
           <h1>Sierra de Gredos</h1>
-          <p className="subtitle">Observaciones en tiempo real - Datos de eBird</p>
         </div>
         <div className="error-message">
           <h3>Error al cargar datos</h3>
@@ -348,7 +334,6 @@ function AvesGredos() {
       {/* Encabezado principal */}
       <div className="page-header">
         <h1>Sierra de Gredos</h1>
-        <p className="subtitle">Observaciones en tiempo real - Datos de eBird</p>
       </div>
 
       {/* Tarjeta informativa sobre los datos */}
@@ -447,7 +432,7 @@ function AvesGredos() {
           type="button" 
           disabled={refreshing} 
         >
-          {refreshing ? '🔄 Actualizando...' : '🔄 Actualizar observaciones'}
+          {refreshing ? 'Actualizando...' : 'Actualizar observaciones'}
         </button>
       </div>
 

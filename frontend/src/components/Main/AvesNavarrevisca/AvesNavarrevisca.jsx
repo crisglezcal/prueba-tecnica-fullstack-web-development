@@ -297,7 +297,7 @@ function AvesNavarrevisca() {
           <input
             type="text"
             className="search-input"
-            placeholder="🔍 Buscar por nombre, científico o familia..."
+            placeholder="Buscar..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -332,7 +332,7 @@ function AvesNavarrevisca() {
             className="btn btn-primary"
             onClick={handleCreate}
           >
-            + Nueva Ave
+            Nueva ave
           </button>
         )}
       </div>
@@ -419,7 +419,7 @@ function AvesNavarrevisca() {
                 
                 <p className="bird-description">{bird.descripcion_corta}</p>
                 
-                <span className="view-details">Ver detalles →</span>
+                <span className="view-details">Ver detalles</span>
               </div>
             </Link>
           ))}

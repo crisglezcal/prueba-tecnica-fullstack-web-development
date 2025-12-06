@@ -343,7 +343,6 @@ function Administrador() {
     <div className="administrador">
       <div className="page-header">
         <h1>Panel de administración</h1>
-        <p className="subtitle">Gestión completa de las aves en la base de datos</p>
       </div>
 
       {/* Botón "Nueva ave" */}
@@ -352,7 +351,7 @@ function Administrador() {
           className="btn btn-primary"
           onClick={handleCreate}
         >
-          + Nueva ave
+          Nueva ave
         </button>
         
         {/* Contenedor de búsqueda */}

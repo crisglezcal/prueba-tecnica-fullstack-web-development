@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { ThreeDots } from 'react-loader-spinner';
-import "../AvesNavarrevisca.css";
+import "../DetalleAveNavarrevisca/DetalleAveNavarrevisca.css";
 
 // Definir el componente DetalleAveNavarrevisca
 function DetalleAveNavarrevisca() {

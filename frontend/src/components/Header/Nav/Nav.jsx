@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import './Nav.css';
 
 function Nav({ isAuthenticated, userRole, onLogout }) {
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
 
   const handleLogout = () => {
     Swal.fire({
@@ -19,47 +28,72 @@ function Nav({ isAuthenticated, userRole, onLogout }) {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        // Ejecutar la función de logout
         onLogout();
+        closeMenu();
         
-        // Mostrar confirmación
         Swal.fire({
           title: '¡Sesión cerrada!',
           text: 'Has salido correctamente',
           icon: 'success',
-          confirmButtonColor: '#3085d6',
+          confirmButtonColor: 'rgba(172, 123, 25, 1)',
           confirmButtonText: 'Aceptar',
           timer: 2000,
           timerProgressBar: true
         }).then(() => {
-          // Redirigir a la página de login
           navigate('/login');
         });
       }
     });
   };
 
+  const handleLinkClick = () => {
+    closeMenu();
+  };
+
   return (
     <nav className="navbar">
-      <ul className="nav-list">
+      {/* Botón Hamburguesa (solo visible en mobile/tablet) */}
+      <button 
+        className={`menu-toggle ${menuOpen ? 'active' : ''}`}
+        onClick={toggleMenu}
+        aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul className={`nav-list ${menuOpen ? 'active' : ''}`}>
         
-        {/* Home - siempre visible */}
+        {/* Home */}
         <li>
-          <NavLink to="/" className={({ isActive }) => isActive ? 'active' : ''}>
+          <NavLink 
+            to="/" 
+            className={({ isActive }) => isActive ? 'active' : ''}
+            onClick={handleLinkClick}
+          >
             Home
           </NavLink>
         </li>
         
-        {/* Sierra de Gredos - siempre visible */}
+        {/* Sierra de Gredos */}
         <li>
-          <NavLink to="/gredos" className={({ isActive }) => isActive ? 'active' : ''}>
+          <NavLink 
+            to="/gredos" 
+            className={({ isActive }) => isActive ? 'active' : ''}
+            onClick={handleLinkClick}
+          >
             Sierra de Gredos
           </NavLink>
         </li>
         
-        {/* Navarrevisca - siempre visible */}
+        {/* Navarrevisca */}
         <li>
-          <NavLink to="/navarrevisca" className={({ isActive }) => isActive ? 'active' : ''}>
+          <NavLink 
+            to="/navarrevisca" 
+            className={({ isActive }) => isActive ? 'active' : ''}
+            onClick={handleLinkClick}
+          >
             Navarrevisca
           </NavLink>
         </li>
@@ -67,7 +101,11 @@ function Nav({ isAuthenticated, userRole, onLogout }) {
         {/* Mis aves favoritas - solo visible si usuario está autenticado */}
         {isAuthenticated && (
           <li>
-            <NavLink to="/favoritos" className={({ isActive }) => isActive ? 'active' : ''}>
+            <NavLink 
+              to="/favoritos" 
+              className={({ isActive }) => isActive ? 'active' : ''}
+              onClick={handleLinkClick}
+            >
               Mis aves favoritas
             </NavLink>
           </li>
@@ -76,22 +114,28 @@ function Nav({ isAuthenticated, userRole, onLogout }) {
         {/* Administrador - solo visible si usuario autenticado es admin */}
         {isAuthenticated && userRole === 'admin' && (
           <li>
-            <NavLink to="/admin" className={({ isActive }) => isActive ? 'active' : ''}>
+            <NavLink 
+              to="/admin" 
+              className={({ isActive }) => isActive ? 'active' : ''}
+              onClick={handleLinkClick}
+            >
               Administrador
             </NavLink>
           </li>
         )}
         
-        {/* Autenticación - cambia entre Iniciar/Cerrar sesión */}
+        {/* Autenticación */}
         <li className="auth-link">
           {isAuthenticated ? (
-            // Botón para cerrar sesión con SweetAlert
             <button onClick={handleLogout} className="logout-btn">
               Cerrar sesión
             </button>
           ) : (
-            // Enlace para iniciar sesión
-            <NavLink to="/login" className={({ isActive }) => isActive ? 'active' : ''}>
+            <NavLink 
+              to="/login" 
+              className={({ isActive }) => isActive ? 'active' : ''}
+              onClick={handleLinkClick}
+            >
               Iniciar sesión
             </NavLink>
           )}
