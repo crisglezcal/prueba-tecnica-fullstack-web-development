@@ -1,0 +1,209 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px);
+  padding: 20px;
+  background: linear-gradient(135deg, var(--beige) 0%, var(--arena) 100%);
+}
+
+.login-card {
+  background-color: var(--blanco);
+  border-radius: 16px;
+  padding: 25px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--tierra-muy-claro);
+}
+
+.login-card h2 {
+  color: var(--verde-oscuro);
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 28px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--tierra-claro);
+}
+
+.error-message {
+  background-color: #fee;
+  color: #c00;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #fcc;
+  font-size: 14px;
+}
+
+/* Sección Google */
+.google-login-section {
+  margin-bottom: 25px;
+}
+
+.btn-google {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--blanco);
+  color: #555;
+  border: 2px solid var(--gris-medio);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.btn-google:hover {
+  background-color: var(--gris-claro);
+  border-color: #ddd;
+}
+
+.separator {
+  text-align: center;
+  position: relative;
+  margin: 20px 0;
+}
+
+.separator::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--gris-medio);
+}
+
+.separator span {
+  background-color: var(--blanco);
+  padding: 0 15px;
+  color: #777;
+  font-size: 14px;
+}
+
+/* Formulario */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid var(--gris-medio);
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background-color: var(--gris-claro);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--verde-claro);
+  background-color: var(--blanco);
+  box-shadow: 0 0 0 3px rgba(76, 133, 96, 0.2);
+}
+
+.form-group input::placeholder {
+  color: #888;
+}
+
+/* Botón principal */
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--verde-medio) 0%, var(--verde-oscuro) 100%);
+  color: var(--blanco);
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--verde-claro) 0%, var(--verde-medio) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Pie de formulario */
+.login-footer {
+  text-align: center;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid var(--gris-medio);
+}
+
+.login-footer p {
+  color: #666;
+  font-size: 15px;
+}
+
+.switch-btn {
+  background: none;
+  border: none;
+  color: var(--verde-oscuro);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  margin-left: 5px;
+}
+
+.switch-btn:hover {
+  color: var(--tierra-oscuro);
+}
+
+/* TABLET */
+@media (min-width: 768px) {
+  .login-card {
+    padding: 35px;
+    max-width: 500px;
+  }
+  
+  .login-card h2 {
+    font-size: 32px;
+    margin-bottom: 30px;
+  }
+  
+  .btn-google {
+    padding: 16px;
+    font-size: 17px;
+  }
+  
+  .form-group input {
+    padding: 16px;
+    font-size: 17px;
+  }
+  
+  .btn-primary {
+    padding: 18px;
+    font-size: 19px;
+  }
+}
+
+/* ORDENADOR */
+@media (min-width: 1024px) {
+  .login-container {
+    min-height: calc(100vh - 200px);
+  }
+  
+  .login-card {
+    max-width: 550px;
+    padding: 40px;
+  }
+  
+  .login-card h2 {
+    font-size: 36px;
+  }
+}
