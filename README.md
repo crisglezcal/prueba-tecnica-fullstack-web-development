@@ -3,7 +3,7 @@
 Aplicación fullstack, mobile first y completamente responsive, diseñada para explorar, registrar y gestionar información sobre las aves de Navarrevisca y los avistamientos en la Sierra de Gredos. Incluye autenticación completa, panel de administrador, filtros avanzados y documentación de rutas.
 
 🎥 **Vídeo de presentación:**  
-[➡️ Ver presentacion.mp4](./assets/presentacion.mp4)
+![Presentación](./assets/presentacion.gif)
 
 ---
 
@@ -37,7 +37,7 @@ Aplicación fullstack, mobile first y completamente responsive, diseñada para e
 
 ### 🗂️ **Base de Datos**
 - **SQL** desplegada en **Render**
-[➡️ Ver modelo-endidad-relacion.png](./assets/modelo-entidad-relacion.png)
+![Modelo-E-R](./assets/modelo-entidad-relacion.png)
 
 ---
 
