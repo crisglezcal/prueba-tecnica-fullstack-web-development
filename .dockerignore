@@ -1,0 +1,7 @@
+# Archivos de configuración de entornos locales
+.env
+
+# Archivos de configuración de control de versiones
+.git
+.gitignore
+
