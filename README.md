@@ -1,16 +1,88 @@
-# React + Vite
+# 🐦 Prueba técnica Fullstack Web Development - Aves de Navarrevisca
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación fullstack, mobile first y completamente responsive, diseñada para explorar, registrar y gestionar información sobre las aves de Navarrevisca y los avistamientos en la Sierra de Gredos. Incluye autenticación completa, panel de administrador, filtros avanzados y documentación de rutas.
 
-Currently, two official plugins are available:
+🎥 **Vídeo de presentación:**  
+[➡️ Ver presentacion.mp4](./assets/presentacion.mp4)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ✨ Características principales
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **🔐 Autenticación completa:** Registro e inicio de sesión con JWT y acceso vía Google
+- **📱 Diseño mobile first y responsive:** para una experiencia óptima en móviles, tablets y desktop
+- **📊 Información en tiempo real:** de avistamientos gracias a la API eBird
+- **🕹️ Interfaz limpia e intuitiva:** orientada a ofrecer una experiencia de usuario positiva
+- **🧭 Navegación dinámica:** con vistas condicionadas por autenticación y roles (usuario/admin)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🛠️ Tecnologías utilizadas
+
+### 🩻 **Backend**
+- **Node.js + Express**
+- **Express Validator** para validaciones robustas
+- **JWT y Google Auth** para autenticación
+- **Patrón Modelo-Vista-Controlador (MVC)**
+- **Swagger** para documentación de rutas
+- **Testing unitario**
+- **Dockerfile** para dockerización
+
+### 💁🏽 **Frontend**
+- **React + JavaScript**
+- **Diseño mobile first**
+- **SweetAlert** para notificaciones
+- **Spinner loading** para feedback de carga
+- **Validaciones con Regex**
+
+### 🗂️ **Base de Datos**
+- **SQL** desplegada en **Render**
+[➡️ Ver modelo-endidad-relacion.png](./assets/modelo-entidad-relacion.png)
+
+---
+
+## 🎯 Funcionalidades de la aplicación
+
+### 🔑 Autenticación
+- Inicio de sesión y registro con email/contraseña
+- Autenticación mediante **Google**
+- Reconocimiento del rol: "user" o "admin"
+
+### 🏠 Home
+- Información sobre la aplicación
+- Contenido informativo sobre la **Sierra de Gredos** y **Navarrevisca**
+
+### 🏔️ Sierra de Gredos
+- Avistamientos **en tiempo real** integrados desde la API **eBird**
+
+### 🐤 Aves de Navarrevisca
+- Base de datos comunitaria de aves locales
+- Vista de detalle para cada especie
+- Opción de **marcar como favorito** (si el usuario está logueado)
+- **Creación de nuevas aves** para usuarios autenticados
+- **Búsqueda en tiempo real** por nombre común, nombre científico y familia
+- **Filtro desplegable** por estado de conservación
+
+### ⭐ Favoritos
+- Muestra los favoritos del usuario logueado
+- Filtros de búsqueda
+- Botón **"Eliminar favorito"**
+
+### 🔧 Administrador
+- Panel exclusivo para usuarios con rol **admin**
+- Funciones:
+  - Crear nuevas aves
+  - Editar aves existentes
+  - Eliminar aves de la base de datos
+
+---
+
+## 🚀 Funcionalidades y mejoras futuras
+
+- Estilos con **SASS**
+- Documentación completa con **JSDoc**
+- Despliegue fullstack en **Render**
+- Subida de **imágenes reales** (no solo URLs)
+- Testing unitario ampliado a todo el proyecto
+
+---
