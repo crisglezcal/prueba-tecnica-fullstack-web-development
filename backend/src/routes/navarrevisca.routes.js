@@ -1,6 +1,7 @@
 /* 
 🛣️ NAVARREVISCA ROUTES → navarrevisca.routes.js
     * Rutas con validación express-validator (TODOS los campos requeridos)
+    * Documentación con Swagger
 */
 
 const express = require('express');

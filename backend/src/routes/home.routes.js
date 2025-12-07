@@ -1,6 +1,7 @@
 /* 
 🛣️ HOME ROUTES (Rutas) → home.routes.js
     * Define UNA sola ruta: GET /
+    * Documentación con Swagger
 */
 
 const express = require('express');

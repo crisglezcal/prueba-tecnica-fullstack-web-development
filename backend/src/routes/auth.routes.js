@@ -1,3 +1,11 @@
+/*
+🛣️ AUTH ROUTES → gredos.routes.js
+    * Define las URL (endpoints) de tu API
+    * Conecta URLs con funciones del controller
+    * Configura verbos HTTP (GET, POST, PUT, DELETE)
+    * Documentación con Swagger
+*/
+
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
@@ -225,20 +233,17 @@ router.get('/google',
  *         description: "Parámetro de estado para prevenir ataques CSRF"
  *     responses:
  *       302:
- *         description: Redirección al frontend con token JWT
+ *         description: Redirección al frontend con token JWT o en caso de error
  *         headers:
  *           Location:
  *             schema:
  *               type: string
- *               example: "http://localhost:5173/login?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
- *               description: "URL del frontend con el token JWT como parámetro de query"
- *       302:
- *         description: Redirección a página de error
- *         headers:
- *           Location:
- *             schema:
- *               type: string
- *               example: "http://localhost:5173/login?error=google_auth_failed"
+ *               description: "URL del frontend con el token JWT como parámetro de query o con parámetro de error"
+ *               examples:
+ *                 success:
+ *                   value: "http://localhost:5173/login?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *                 error:
+ *                   value: "http://localhost:5173/login?error=google_auth_failed"
  */
 // 2. Callback de Google - Convierte sesión a JWT
 router.get('/google/callback',

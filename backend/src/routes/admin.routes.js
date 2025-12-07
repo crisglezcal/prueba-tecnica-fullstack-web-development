@@ -3,6 +3,7 @@
     * Rutas para administradores (CRUD completo de aves)
     * IMPORTANTE: Temporalmente sin auth para desarrollo
     * Cuando haya auth: verificar que el usuario tenga rol 'admin'
+    * Documentación con Swagger
 */
 
 const express = require('express');
