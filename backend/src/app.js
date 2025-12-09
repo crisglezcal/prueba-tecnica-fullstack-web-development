@@ -13,6 +13,7 @@
 
 const express = require('express');
 const cors = require('cors');
+const path = require('path'); 
 require('dotenv').config();
 const passport = require('passport');
 const session = require('express-session');
@@ -147,6 +148,19 @@ app.use('/aves/navarrevisca', navarreviscaRoutes);
 app.use('/aves/navarrevisca/detalle', navarreviscaDetailRoutes);
 app.use('/favoritos', favoritesRoutes);
 app.use('/admin', adminRoutes);
+
+// =============================================================================================================================
+// SERVIR FRONTEND EN PRODUCCIÓN
+// =============================================================================================================================
+
+if (process.env.NODE_ENV==="production") {
+  // Servir archivos estáticos del frontend con React
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  // Manejar cualquier ruta que no sea de la API y servir el index.html de React
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+  });
+}
 
 // =============================================================================================================================
 // RUTA PARA VERIFICAR SESIÓN (DEBUG)

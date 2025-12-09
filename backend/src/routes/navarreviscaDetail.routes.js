@@ -1,6 +1,7 @@
 /* 
 🛣️ NAVARREVISCA-DETAIL ROUTES → navarreviscaDetail.routes.js
     * Rutas para vista detalle y favoritos
+    * Documentación con Swagger
 */
 
 const express = require('express');

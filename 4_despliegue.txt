@@ -1,0 +1,17 @@
+PASO 1: Despliegue bdd en Render
+
+PASO 2: Dockerización (instrucciones) -> Dockerfile + app.js (if (process.env.NODE_ENV...)) + .dockerignore
+        if (process.env.NODE_ENV==="production") {
+    // Servir archivos estáticos del frontend con React
+    app.use(express.static(path.join(__dirname, "../frontend/dist")));
+    // Manejar cualquier ruta que no sea de la API y servir el index.html de React
+    app.get("/", (req, res) => {
+        res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+    });
+    }
+
+PASO 3: Cambiar dentro del código "http://localhost..." por NODE_ENV´
+
+PASO 4: .env SSL
+
+PASO 5: Render -> New -> Web service

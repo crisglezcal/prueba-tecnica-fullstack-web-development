@@ -1,6 +1,17 @@
 {
+  "name": "proyecto-final-individual",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "install": "npm install --prefix backend && npm install --prefix frontend",
+    "install:prod": "npm install --production --prefix backend && npm install --production --prefix frontend",
+    "start:backend": "npm start --prefix backend",
+    "start:frontend": "npm run build --prefix frontend && npm run preview --prefix frontend",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "build": "npm run build --prefix frontend",
+    "test": "echo \"No test specified\" && exit 0",
+    "seed": "npm --prefix backend run seed"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

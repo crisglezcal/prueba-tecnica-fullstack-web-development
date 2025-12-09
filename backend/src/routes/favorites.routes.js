@@ -2,6 +2,7 @@
 🛣️ FAVORITES ROUTES → favorites.routes.js
     * Rutas para gestionar favoritos del usuario
     * TODAS requieren autenticación
+    * Documentación con Swagger
 */
 
 const express = require('express');
