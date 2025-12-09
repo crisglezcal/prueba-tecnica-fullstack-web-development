@@ -19,7 +19,7 @@ RUN npm run build
 EXPOSE 3001
 
 # Establecer las variables de entorno en tiempo de ejecución
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 ENV PORT=3001                    
 ENV FRONTEND_URL=http://localhost:5173 
 
