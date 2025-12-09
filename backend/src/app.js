@@ -154,6 +154,7 @@ app.use('/admin', adminRoutes);
 // =============================================================================================================================
 
 if (process.env.NODE_ENV==="production") {
+  console.log("*******************************************************");
   // Servir archivos estáticos del frontend con React
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
   // Manejar cualquier ruta que no sea de la API y servir el index.html de React
