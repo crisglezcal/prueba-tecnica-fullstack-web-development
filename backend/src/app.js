@@ -153,7 +153,7 @@ app.use('/admin', adminRoutes);
 // SERVIR FRONTEND EN PRODUCCIÓN
 // =============================================================================================================================
 
-if (process.env.NODE_ENV==="production") {
+//if (process.env.NODE_ENV==="production") {
   console.log("*******************************************************");
   // Servir archivos estáticos del frontend con React
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
@@ -161,7 +161,7 @@ if (process.env.NODE_ENV==="production") {
   app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
   });
-}
+//}
 
 
 
