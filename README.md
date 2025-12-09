@@ -17,31 +17,6 @@ Aplicación fullstack, mobile first y completamente responsive, diseñada para e
 
 ---
 
-### 🆙Inicializar el repositorio
-
-```bash
-# Clonar el repositorio
-git clone https://github.com/crisglezcal/prueba-tecnica-fullstack-web-development.git
-
-# Navegar al directorio del proyecto
-cd prueba-tecnica-fullstack-web-development
-
-# Instalar dependencias del frontend
-cd frontend
-npm install
-
-# Instalar dependencias del backend
-cd ../backend
-npm install
-
-# Volver a la raíz e instalar dependencias globales (si las hay)
-cd ..
-
-# Ejecutar la aplicación
-npm run dev
-
----
-
 ## 🛠️ Tecnologías utilizadas
 
 ### 🩻 **Backend**
@@ -111,3 +86,27 @@ npm run dev
 - Testing unitario ampliado a todo el proyecto
 - Mejora y limpieza del Modelo-Vista-Controllador
 
+---
+
+### 🆙Inicializar el repositorio
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/crisglezcal/prueba-tecnica-fullstack-web-development.git
+
+# Navegar al directorio del proyecto
+cd prueba-tecnica-fullstack-web-development
+
+# Instalar dependencias del frontend
+cd frontend
+npm install
+
+# Instalar dependencias del backend
+cd ../backend
+npm install
+
+# Volver a la raíz e instalar dependencias globales (si las hay)
+cd ..
+
+# Ejecutar la aplicación
+npm run dev
