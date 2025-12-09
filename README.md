@@ -107,6 +107,7 @@ npm install
 
 # Volver a la raíz e instalar dependencias globales (si las hay)
 cd ..
+npm install
 
 # Ejecutar la aplicación
 npm run dev
