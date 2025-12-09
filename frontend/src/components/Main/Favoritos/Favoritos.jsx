@@ -4,6 +4,8 @@ import Swal from 'sweetalert2';
 import { ThreeDots } from 'react-loader-spinner';
 import './Favoritos.css';
 
+const VITE_API_URL = import.meta.VITE_API_URL
+
 // Definir el componente principal Favoritos
 function Favoritos() {
   
@@ -84,7 +86,7 @@ function Favoritos() {
       }
 
       // Hacer petición GET a la API para obtener las aves favoritas
-      const response = await fetch('http://localhost:3001/favoritos', {
+      const response = await fetch(`${VITE_API_URL}/favoritos`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,  
@@ -230,7 +232,7 @@ function Favoritos() {
         });
 
         // Hacer petición DELETE a la API para eliminar el favorito
-        const response = await fetch(`http://localhost:3001/favoritos/${favoriteId}`, {
+        const response = await fetch(`${VITE_API_URL}/favoritos/${favoriteId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,

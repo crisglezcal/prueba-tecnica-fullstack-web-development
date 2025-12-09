@@ -3,6 +3,8 @@ import Swal from 'sweetalert2';
 import { ThreeDots } from 'react-loader-spinner';
 import './Administrador.css';
 
+const VITE_API_URL = import.meta.VITE_API_URL
+
 // Componente principal del panel de administrador
 function Administrador() {
   const [birds, setBirds] = useState([]); // Estado 1 lista completa de aves
@@ -36,7 +38,7 @@ function Administrador() {
   // Función para cargar aves desde el backend
   const loadBirds = async () => {
     try {
-      const response = await fetch('http://localhost:3001/aves/navarrevisca');
+      const response = await fetch(`${VITE_API_URL}/aves/navarrevisca`);
       if (!response.ok) {
         throw new Error('Error al cargar las aves');
       }
@@ -91,7 +93,7 @@ function Administrador() {
       try {
         const token = localStorage.getItem('authToken');
         
-        await fetch(`http://localhost:3001/admin/aves/${birdId}`, {
+        await fetch(`${VITE_API_URL}/admin/aves/${birdId}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -193,7 +195,7 @@ function Administrador() {
             image: result.value.imagen
           };
 
-          await fetch('http://localhost:3001/admin/aves', {
+          await fetch(`${VITE_API_URL}/admin/aves`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -293,7 +295,7 @@ function Administrador() {
             image: result.value.imagen
           };
 
-          await fetch(`http://localhost:3001/admin/aves/${bird.id}`, {
+          await fetch(`${VITE_API_URL}/admin/aves/${bird.id}`, {
             method: 'PUT',
             headers: {
               'Authorization': `Bearer ${token}`,

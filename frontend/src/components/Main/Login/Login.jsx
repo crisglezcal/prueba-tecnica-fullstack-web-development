@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2'; 
 import './Login.css';
 
+const VITE_API_URL = import.meta.VITE_API_URL
+
 // Componente Login que recibe la función onLogin como prop desde el componente padre (App.js)
 function Login({ onLogin }) {
   
@@ -57,7 +59,7 @@ function Login({ onLogin }) {
         localStorage.setItem('token', token);
         
         // Hacer una solicitud al backend para obtener los datos del usuario
-        const response = await fetch('http://localhost:3001/api/auth/me', {
+        const response = await fetch(`${VITE_API_URL}/api/auth/me`, {
           headers: { 'Authorization': `Bearer ${token}` } 
         });
 
@@ -118,7 +120,7 @@ function Login({ onLogin }) {
   // Función para iniciar el login con Google
   const handleGoogleLogin = () => {
     // Redirigir al usuario al endpoint de Google OAuth en el backend
-    window.location.href = 'http://localhost:3001/api/auth/google';
+    window.location.href = `${VITE_API_URL}/api/auth/google`;
   };
 
   // Función para manejar el envío del formulario (login o registro normal)
@@ -144,7 +146,7 @@ function Login({ onLogin }) {
     
     try {
       // Enviar solicitud al backend
-      const response = await fetch(`http://localhost:3001${endpoint}`, {
+      const response = await fetch(`${VITE_API_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

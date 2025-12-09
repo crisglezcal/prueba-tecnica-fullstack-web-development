@@ -4,6 +4,8 @@ import Swal from 'sweetalert2';
 import { ThreeDots } from 'react-loader-spinner';
 import "../DetalleAveNavarrevisca/DetalleAveNavarrevisca.css";
 
+const VITE_API_URL = import.meta.VITE_API_URL
+
 // Definir el componente DetalleAveNavarrevisca
 function DetalleAveNavarrevisca() {
 
@@ -27,7 +29,7 @@ function DetalleAveNavarrevisca() {
         // Activar estado de carga
         setLoading(true);
         // Hacer petición GET a la API para obtener detalles del ave específica
-        const response = await fetch(`http://localhost:3001/aves/navarrevisca/detalle/${id}`);
+        const response = await fetch(`${VITE_API_URL}:3001/aves/navarrevisca/detalle/${id}`);
         
         // Verificar si la respuesta no es exitosa
         if (!response.ok) throw new Error(`Error ${response.status}`);
@@ -89,7 +91,7 @@ function DetalleAveNavarrevisca() {
       }
 
       // Hacer petición POST a la API para añadir a favoritos
-      const response = await fetch(`http://localhost:3001/aves/navarrevisca/detalle/${id}/favoritos`, {
+      const response = await fetch(`${VITE_API_URL}:3001/aves/navarrevisca/detalle/${id}/favoritos`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,  // Enviar token en el header

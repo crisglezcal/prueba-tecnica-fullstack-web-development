@@ -26,10 +26,11 @@ const swaggerUi = require('swagger-ui-express');
 const app = express();
 
 // Configuración CORS - Permite conexión con frontend React/Vite
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
-}));
+// app.use(cors({
+//   origin: 'http://localhost:5173',
+//   credentials: true
+// }));
+app.use(cors());
 
 // Configuración de sesiones para OAuth
 app.use(session({

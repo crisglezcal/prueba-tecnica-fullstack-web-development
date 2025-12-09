@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './AvesGredos.css';
 
+const VITE_API_URL = import.meta.VITE_API_URL
+
+
 // Definir el componente funcional AvesGredos
 function AvesGredos() {
   // Estado 1: Almacena la lista de observaciones de aves
@@ -40,7 +43,7 @@ function AvesGredos() {
       setError('');
       
       // Hacer petición HTTP GET al endpoint del backend
-      const response = await fetch('http://localhost:3001/api/avila/observations');
+      const response = await fetch(`${VITE_API_URL}/api/avila/observations`);
       
       // Verificar si la respuesta HTTP no es exitosa (200-299)
       if (!response.ok) {
