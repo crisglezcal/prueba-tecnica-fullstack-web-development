@@ -4,9 +4,9 @@ import Swal from 'sweetalert2';
 import { ThreeDots } from 'react-loader-spinner';
 import './AvesNavarrevisca.css';
 
-const VITE_API_URL = import.meta.VITE_API_URL
+const API_URL = import.meta.VITE_API_URL
 console.log("*****************");
-console.log(VITE_API_URL);
+console.log(API_URL);
 
 
 // Componente para mostrar la lista de aves de Navarrevisca
@@ -74,7 +74,7 @@ function AvesNavarrevisca() {
         });
 
         // Llamada a la API para obtener las aves
-        const response = await fetch(`${VITE_API_URL}/aves/navarrevisca`);
+        const response = await fetch(`${API_URL}/aves/navarrevisca`);
 
         // Verificar si la respuesta es correcta
         if (!response.ok) {
@@ -217,7 +217,7 @@ function AvesNavarrevisca() {
           });
 
           // Llamada a la API para crear la nueva ave
-          const response = await fetch(`${VITE_API_URL}/aves/navarrevisca`, {
+          const response = await fetch(`${API_URL}/aves/navarrevisca`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -230,7 +230,7 @@ function AvesNavarrevisca() {
 
           if (response.ok) {
             // Recargar la lista de aves
-            const fetchResponse = await fetch(`${VITE_API_URL}/aves/navarrevisca`);
+            const fetchResponse = await fetch(`${API_URL}/aves/navarrevisca`);
             const result = await fetchResponse.json();
             const avesArray = result.data || [];
             
