@@ -5,6 +5,9 @@ import { ThreeDots } from 'react-loader-spinner';
 import './AvesNavarrevisca.css';
 
 const VITE_API_URL = import.meta.VITE_API_URL
+console.log("*****************");
+console.log(VITE_API_URL);
+
 
 // Componente para mostrar la lista de aves de Navarrevisca
 function AvesNavarrevisca() {
