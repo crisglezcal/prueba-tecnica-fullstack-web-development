@@ -12,16 +12,14 @@ RUN npm install
 # Instalar dependencias del proyecto tanto backend como frontend
 RUN npm run install
 
-# Construir el frontend usando el comando del package.json principal
+# Construir el frontend usando el comando  del package.json principal
 RUN npm run build
 
-# Exponer el puerto del backend (3001 por defecto)
+# Exponer el puerto del backend
 EXPOSE 3001
 
 # Establecer las variables de entorno en tiempo de ejecución
-ENV NODE_ENV=development
-ENV PORT=3001                    
-ENV FRONTEND_URL=http://localhost:5173 
+ENV NODE_ENV=production
 
 # Comando para iniciar el proyecto completo
 CMD ["npm", "start"]
