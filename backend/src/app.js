@@ -141,7 +141,7 @@ const adminRoutes = require('./routes/admin.routes.js');
 // CONFIGURAR LAS RUTAS DE LA APLICACIÓN
 // =============================================================================================================================
 
-app.use('/', homeRoutes);
+//app.use('/', homeRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/avila', gredosRoutes);
 app.use('/aves/navarrevisca', navarreviscaRoutes);
@@ -153,15 +153,20 @@ app.use('/admin', adminRoutes);
 // SERVIR FRONTEND EN PRODUCCIÓN
 // =============================================================================================================================
 
-//if (process.env.NODE_ENV==="production") {
+if (process.env.NODE_ENV==="production") {
   console.log("*******************************************************");
+  console.log(process.env.NODE_ENV);
   // Servir archivos estáticos del frontend con React
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.use(express.static(path.join(__dirname, "../../frontend/dist")));
   // Manejar cualquier ruta que no sea de la API y servir el index.html de React
   app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+    console.log(path.join(__dirname, "../../frontend/dist", "index.html"));
+    
+    res.sendFile(path.join(__dirname, "../../frontend/dist", "index.html"));
   });
-//}
+}
+
+
 
 
 
