@@ -16,8 +16,9 @@ const pool = new Pool({
   database: process.env.PG_DATABASE,
   user: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
-  ssl: { rejectUnauthorized: false }, // Requerido para Render
-  connectionTimeoutMillis: 5000,
+  ssl: process.env.PG_SSL === 'true' // BBDD local (false) o remota (true)
+  // ssl: { rejectUnauthorized: false }, // Requerido para Render
+  // connectionTimeoutMillis: 5000
 });
 
 // Test al iniciar
