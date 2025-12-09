@@ -141,7 +141,7 @@ const adminRoutes = require('./routes/admin.routes.js');
 // CONFIGURAR LAS RUTAS DE LA APLICACIÓN
 // =============================================================================================================================
 
-// app.use('/', homeRoutes);
+app.use('/', homeRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/avila', gredosRoutes);
 app.use('/aves/navarrevisca', navarreviscaRoutes);
