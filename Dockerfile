@@ -1,5 +1,9 @@
 FROM node:20-alpine
 
+# Recibir la variable desde Render
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
 # Establecer el directorio de trabajo
 WORKDIR /app
 
@@ -11,10 +15,6 @@ RUN npm install
 
 # Instalar dependencias del proyecto tanto backend como frontend
 RUN npm run install
-
-# Recibir la variable desde Render
-ARG VITE_API_URL
-ENV VITE_API_URL=${VITE_API_URL}
 
 # Construir el frontend usando el comando  del package.json principal
 RUN npm run build
